@@ -8,6 +8,8 @@ import {
   updateOrderStatus as dbUpdateOrderStatus,
   updateRiderStatus as dbUpdateRiderStatus,
   addProduct as dbAddProduct,
+  updateProduct as dbUpdateProduct,
+  deleteProduct as dbDeleteProduct,
   updateMerchantSettings as dbUpdateMerchantSettings,
   assignNearestRider as dbAssignNearestRider,
   subscribeToGlobalRealtime,
@@ -172,6 +174,17 @@ export function AppProvider({ children }) {
     return created;
   };
 
+  const updateProductInfo = async (productId, productData) => {
+    const updated = await dbUpdateProduct(productId, productData);
+    await refreshData();
+    return updated;
+  };
+
+  const deleteProductInfo = async (productId) => {
+    await dbDeleteProduct(productId);
+    await refreshData();
+  };
+
   const updateMerchantInfo = async (merchantId, settingsPayload) => {
     const updated = await dbUpdateMerchantSettings(merchantId, settingsPayload);
     await refreshData();
@@ -205,6 +218,8 @@ export function AppProvider({ children }) {
     updateOrderStatus,
     updateRiderStatus,
     addNewProduct,
+    updateProductInfo,
+    deleteProductInfo,
     updateMerchantInfo,
     refreshData,
     isSupabaseConfigured

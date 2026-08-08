@@ -573,6 +573,40 @@ export async function addProduct(productData) {
   return newProd;
 }
 
+export async function updateProduct(productId, productData) {
+  const updatePayload = {
+    ...productData,
+    price: Number(productData.price),
+    stock: Number(productData.stock || 50),
+    updated_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from('products')
+      .update(updatePayload)
+      .eq('id', productId)
+      .select()
+      .single();
+    if (!error && data) return data;
+  }
+
+  const currentProds = getLocalStore('products', INITIAL_PRODUCTS);
+  const updated = currentProds.map(p => p.id === productId ? { ...p, ...updatePayload } : p);
+  setLocalStore('products', updated);
+  return updated.find(p => p.id === productId);
+}
+
+export async function deleteProduct(productId) {
+  if (isSupabaseConfigured && supabase) {
+    await supabase.from('products').delete().eq('id', productId);
+  }
+
+  const currentProds = getLocalStore('products', INITIAL_PRODUCTS);
+  const updated = currentProds.filter(p => p.id !== productId);
+  setLocalStore('products', updated);
+}
+
 // REALTIME SUBSCRIPTIONS
 export function subscribeToGlobalRealtime(onDataChanged) {
   if (isSupabaseConfigured && supabase) {

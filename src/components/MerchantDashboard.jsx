@@ -10,12 +10,16 @@ export default function MerchantDashboard() {
     products,
     acceptOrder,
     addNewProduct,
+    updateProductInfo,
+    deleteProductInfo,
     updateMerchantInfo,
     profile
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('incoming'); // 'incoming' | 'all' | 'products' | 'settings'
   const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [allocationNotice, setAllocationNotice] = useState(null);
   const [saveSettingsNotice, setSaveSettingsNotice] = useState(false);
 
@@ -91,6 +95,46 @@ export default function MerchantDashboard() {
     });
     setNewProduct({ name: '', price: '', stock: '50', unit: '1 unit', category: merchant?.category || 'General', image_url: '' });
     setShowAddProductModal(false);
+  };
+
+  const handleEditProductClick = (product) => {
+    setEditingProduct({
+      id: product.id,
+      name: product.name || '',
+      price: product.price || '',
+      stock: product.stock || 50,
+      unit: product.unit || '1 unit',
+      category: product.category || merchant?.category || 'General',
+      image_url: product.image_url || ''
+    });
+    setShowEditProductModal(true);
+  };
+
+  const handleEditFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditingProduct(prev => ({ ...prev, image_url: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditProductSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingProduct || !editingProduct.name || !editingProduct.price) return;
+    await updateProductInfo(editingProduct.id, editingProduct);
+    setShowEditProductModal(false);
+    setEditingProduct(null);
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      await deleteProductInfo(productId);
+      setShowEditProductModal(false);
+      setEditingProduct(null);
+    }
   };
 
   const handleSaveSettings = async (e) => {
@@ -351,13 +395,30 @@ export default function MerchantDashboard() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md">
             {merchantProducts.map(prod => (
-              <div key={prod.id} className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs p-md space-y-xs flex flex-col justify-between">
+              <div key={prod.id} className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs p-md space-y-xs flex flex-col justify-between hover:shadow-md transition-all group">
                 <div className="space-y-xs">
-                  <img src={getProductImage(prod, merchant)} alt={prod.name} className="h-36 w-full object-cover rounded-xl" />
+                  <div className="relative rounded-xl overflow-hidden">
+                    <img src={getProductImage(prod, merchant)} alt={prod.name} className="h-36 w-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <button
+                      onClick={() => handleEditProductClick(prod)}
+                      className="absolute top-2 right-2 bg-surface/90 backdrop-blur-xs text-on-surface hover:bg-primary hover:text-on-primary p-1.5 rounded-full shadow-md text-xs transition-colors flex items-center justify-center"
+                      title="Edit Product"
+                    >
+                      <span className="material-symbols-outlined text-base">edit</span>
+                    </button>
+                  </div>
                   <h4 className="font-bold text-sm text-on-surface line-clamp-1">{prod.name}</h4>
                   <p className="text-xs text-secondary">{prod.unit || '1 unit'} • Stock: {prod.stock || 50}</p>
                 </div>
-                <div className="font-bold text-primary text-base pt-xs border-t border-outline-variant">₹{prod.price}</div>
+                <div className="flex justify-between items-center pt-xs border-t border-outline-variant">
+                  <div className="font-bold text-primary text-base">₹{prod.price}</div>
+                  <button
+                    onClick={() => handleEditProductClick(prod)}
+                    className="text-xs font-bold text-primary hover:bg-primary-fixed px-sm py-xs rounded-lg transition-colors flex items-center gap-xs"
+                  >
+                    <span className="material-symbols-outlined text-sm">edit</span> Edit
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -633,6 +694,183 @@ export default function MerchantDashboard() {
                 >
                   Save Product →
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EDIT PRODUCT WITH FILE UPLOAD + LIVE PREVIEW */}
+      {showEditProductModal && editingProduct && (
+        <div className="fixed inset-0 bg-on-surface/50 backdrop-blur-xs flex items-center justify-center p-md z-50 animate-fadeIn">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg max-w-lg w-full shadow-2xl space-y-md max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-xs border-b border-outline-variant">
+              <div>
+                <h3 className="font-headline-md font-bold text-on-surface">✏️ Edit Product</h3>
+                <p className="text-xs text-secondary">Update product details, price, stock, category, or photo</p>
+              </div>
+              <button onClick={() => setShowEditProductModal(false)} className="text-secondary hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleEditProductSubmit} className="space-y-md">
+              {/* Product Photo Upload & Preview Section */}
+              <div className="space-y-xs">
+                <label className="block font-label-sm text-xs text-secondary font-bold">
+                  🖼️ Product Photo / Image
+                </label>
+                
+                {/* Live Preview Box */}
+                {editingProduct.image_url ? (
+                  <div className="relative h-36 w-full rounded-xl overflow-hidden border border-primary">
+                    <img src={editingProduct.image_url} alt="Product Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setEditingProduct({ ...editingProduct, image_url: '' })}
+                      className="absolute top-xs right-xs bg-error text-on-error rounded-full p-xs text-xs shadow-xs"
+                      title="Remove image"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-outline-variant rounded-xl p-md text-center space-y-xs bg-surface-container-low hover:bg-surface-container transition-colors">
+                    <span className="material-symbols-outlined text-3xl text-secondary">add_a_photo</span>
+                    <div className="text-xs text-secondary">
+                      <label className="text-primary font-bold cursor-pointer hover:underline">
+                        Upload Image File
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleEditFileUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <span> or enter URL below</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Preset Fast Selectors */}
+                <div className="pt-xs">
+                  <span className="text-[11px] text-secondary font-bold block mb-xs">Fast Select Product Preset Photo:</span>
+                  <div className="flex gap-xs overflow-x-auto pb-xs">
+                    {PRODUCT_PRESETS.map((preset) => (
+                      <button
+                        type="button"
+                        key={preset.label}
+                        onClick={() => setEditingProduct({ ...editingProduct, image_url: preset.url })}
+                        className="px-xs py-unit bg-surface-container text-xs rounded-md text-secondary hover:bg-primary-container hover:text-on-primary-container font-bold shrink-0 border border-outline-variant"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Image URL Text Input */}
+                <input
+                  type="url"
+                  placeholder="Or paste Image URL (https://...)"
+                  value={editingProduct.image_url}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
+                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl text-xs font-body-md text-on-surface focus:outline-hidden"
+                />
+              </div>
+
+              <div>
+                <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                  Product Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingProduct.name}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-md">
+                <div>
+                  <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                    Price (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={editingProduct.price}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
+                    className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                    Unit Size
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.unit}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, unit: e.target.value })}
+                    className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-md">
+                <div>
+                  <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                    Stock Quantity
+                  </label>
+                  <input
+                    type="number"
+                    value={editingProduct.stock}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, stock: e.target.value })}
+                    className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                    Category
+                  </label>
+                  <select
+                    value={editingProduct.category}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
+                    className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
+                  >
+                    {['Kirana', 'Hardware', 'Pharmacy', 'Electrical', 'Fresh', 'Home', 'General'].map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-sm justify-between items-center pt-xs border-t border-outline-variant">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteProduct(editingProduct.id)}
+                  className="px-md py-sm bg-error-container text-on-error-container rounded-xl text-xs font-bold hover:bg-error hover:text-on-error transition-colors flex items-center gap-xs"
+                >
+                  <span className="material-symbols-outlined text-sm">delete</span> Delete Product
+                </button>
+                <div className="flex gap-xs">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditProductModal(false)}
+                    className="px-md py-sm bg-surface-container-high rounded-xl text-xs font-bold text-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-lg py-sm bg-primary text-on-primary rounded-xl text-xs font-bold hover:bg-primary-container shadow-xs"
+                  >
+                    Update Product →
+                  </button>
+                </div>
               </div>
             </form>
           </div>
