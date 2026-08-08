@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LocalConnect - Order Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#ffb59b",
+                        "on-tertiary-fixed-variant": "#0040a0",
+                        "inverse-surface": "#313030",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#e0e0dd",
+                        "on-primary-container": "#ffe9e3",
+                        "primary": "#973100",
+                        "surface-container": "#f0eded",
+                        "on-secondary-fixed-variant": "#464745",
+                        "tertiary": "#004cba",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#0062ec",
+                        "on-secondary-fixed": "#1a1c1a",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-container": "#e9edff",
+                        "secondary-fixed": "#e3e2e0",
+                        "surface-bright": "#fcf9f8",
+                        "outline-variant": "#e1bfb4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#380d00",
+                        "surface-container-high": "#eae7e7",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dcd9d9",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-container": "#c04000",
+                        "primary-fixed-dim": "#ffb59b",
+                        "tertiary-fixed-dim": "#b2c5ff",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdbcf",
+                        "on-primary-fixed-variant": "#812800",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#5e5f5d",
+                        "surface-tint": "#a93700",
+                        "secondary-fixed-dim": "#c7c6c4",
+                        "on-secondary-container": "#626361",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-tertiary-fixed": "#001847",
+                        "on-surface-variant": "#594139",
+                        "tertiary-fixed": "#dae2ff",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-background": "#1c1b1b",
+                        "background": "#fcf9f8",
+                        "outline": "#8d7167"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "container-margin": "20px",
+                        "sm": "8px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Public Sans"],
+                        "headline-lg": ["Public Sans"],
+                        "label-sm": ["Public Sans"],
+                        "label-md": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "headline-lg-mobile": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50 shadow-[0px_4px_12px_rgba(26,26,26,0.05)]">
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">
+            LocalConnect
+        </div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-2xl" data-icon="account_circle">account_circle</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-3xl mx-auto px-container-margin py-lg md:py-xl flex flex-col gap-lg">
+<!-- Header Section -->
+<div class="text-center flex flex-col items-center gap-sm mt-md">
+<div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-3xl" data-icon="check_circle">check_circle</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Order Confirmed</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Thank you for your purchase!</p>
+</div>
+<!-- Order Info Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-[0px_4px_12px_rgba(26,26,26,0.05)] flex flex-col gap-md">
+<div class="flex justify-between items-center border-b border-surface-variant pb-md">
+<div>
+<span class="font-label-sm text-label-sm text-secondary block mb-unit">Order ID</span>
+<span class="font-headline-md text-headline-md text-on-surface">#LC-9823</span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-secondary block mb-unit">Estimated Delivery</span>
+<span class="font-headline-md text-headline-md text-primary">Today, 4:30 PM</span>
+</div>
+</div>
+<!-- Tracker Stepper -->
+<div class="relative py-lg">
+<!-- Connecting Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-variant -translate-y-1/2 z-0 hidden sm:block"></div>
+<div class="absolute top-1/2 left-0 w-[40%] h-[2px] bg-primary -translate-y-1/2 z-0 hidden sm:block"></div>
+<div class="relative z-10 flex flex-col sm:flex-row justify-between gap-md sm:gap-0">
+<!-- Step 1: Placed -->
+<div class="flex sm:flex-col items-center gap-sm sm:w-1/4">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-xl" data-icon="receipt_long">receipt_long</span>
+</div>
+<div class="sm:text-center">
+<span class="font-label-md text-label-md text-on-surface block">Placed</span>
+<span class="font-body-sm text-body-sm text-secondary">10:15 AM</span>
+</div>
+</div>
+<!-- Step 2: Accepted (Active) -->
+<div class="flex sm:flex-col items-center gap-sm sm:w-1/4">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 border-4 border-surface-container-lowest shadow-[0_0_0_2px_theme(colors.primary)]">
+<span class="material-symbols-outlined text-xl" data-icon="storefront">storefront</span>
+</div>
+<div class="sm:text-center">
+<span class="font-label-md text-label-md text-primary block">Accepted</span>
+<span class="font-body-sm text-body-sm text-secondary">10:20 AM</span>
+</div>
+</div>
+<!-- Step 3: Assigned -->
+<div class="flex sm:flex-col items-center gap-sm sm:w-1/4 opacity-50">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center shrink-0 border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-xl" data-icon="local_shipping">local_shipping</span>
+</div>
+<div class="sm:text-center">
+<span class="font-label-md text-label-md text-on-surface-variant block">Assigned</span>
+<span class="font-body-sm text-body-sm text-secondary">Pending</span>
+</div>
+</div>
+<!-- Step 4: Delivered -->
+<div class="flex sm:flex-col items-center gap-sm sm:w-1/4 opacity-50">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center shrink-0 border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-xl" data-icon="home">home</span>
+</div>
+<div class="sm:text-center">
+<span class="font-label-md text-label-md text-on-surface-variant block">Delivered</span>
+<span class="font-body-sm text-body-sm text-secondary">Est. 4:30 PM</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-md flex items-start gap-md mt-sm">
+<span class="material-symbols-outlined text-primary" data-icon="info">info</span>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-unit">Shop is preparing your order</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Your order has been accepted by Sharma Stores and is currently being packed. We will notify you once a delivery partner is assigned.</p>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-md mt-sm">
+<button class="flex-1 bg-surface-container-lowest border border-outline font-label-md text-label-md text-on-surface h-12 rounded-lg flex items-center justify-center gap-sm hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="receipt">receipt</span>
+                View Receipt
+            </button>
+<button class="flex-1 bg-primary font-label-md text-label-md text-on-primary h-12 rounded-lg flex items-center justify-center gap-sm hover:bg-primary-container transition-colors shadow-[0px_4px_12px_rgba(26,26,26,0.05)]">
+<span class="material-symbols-outlined text-lg" data-icon="support_agent">support_agent</span>
+                Contact Support
+            </button>
+</div>
+</main>
+</body></html>

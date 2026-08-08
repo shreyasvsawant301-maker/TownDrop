@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Merchant Products - LocalConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#ffb59b",
+                        "on-tertiary-fixed-variant": "#0040a0",
+                        "inverse-surface": "#313030",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#e0e0dd",
+                        "on-primary-container": "#ffe9e3",
+                        "primary": "#973100",
+                        "surface-container": "#f0eded",
+                        "on-secondary-fixed-variant": "#464745",
+                        "tertiary": "#004cba",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#0062ec",
+                        "on-secondary-fixed": "#1a1c1a",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-container": "#e9edff",
+                        "secondary-fixed": "#e3e2e0",
+                        "surface-bright": "#fcf9f8",
+                        "outline-variant": "#e1bfb4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#380d00",
+                        "surface-container-high": "#eae7e7",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dcd9d9",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-container": "#c04000",
+                        "primary-fixed-dim": "#ffb59b",
+                        "tertiary-fixed-dim": "#b2c5ff",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdbcf",
+                        "on-primary-fixed-variant": "#812800",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#5e5f5d",
+                        "surface-tint": "#a93700",
+                        "secondary-fixed-dim": "#c7c6c4",
+                        "on-secondary-container": "#626361",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-tertiary-fixed": "#001847",
+                        "on-surface-variant": "#594139",
+                        "tertiary-fixed": "#dae2ff",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-background": "#1c1b1b",
+                        "background": "#fcf9f8",
+                        "outline": "#8d7167"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "container-margin": "20px",
+                        "sm": "8px",
+                        "md": "16px"
+                    },
+                    fontFamily: {
+                        "headline-xl": ["Public Sans"],
+                        "headline-lg": ["Public Sans"],
+                        "label-sm": ["Public Sans"],
+                        "label-md": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "headline-lg-mobile": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"]
+                    },
+                    fontSize: {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased pb-[100px]">
+<!-- TopNavBar (Mobile First, Hidden on Desktop) -->
+<header class="bg-surface dark:bg-surface-dim shadow-[0px_4px_12px_rgba(26,26,26,0.05)] w-full sticky top-0 z-50 md:hidden">
+<div class="flex justify-between items-center w-full px-container-margin py-md">
+<div class="flex items-center gap-sm">
+<button class="text-on-surface p-sm -ml-sm">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">Sharma Grocers</h1>
+<span class="text-label-sm font-label-sm text-secondary">Sec 14, Main Market</span>
+</div>
+</div>
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-full">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+</div>
+<!-- Category Filter Chips -->
+<div class="px-container-margin pb-md overflow-x-auto whitespace-nowrap flex gap-sm no-scrollbar">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-[4px] transition-colors">All</button>
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Dairy</button>
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Snacks</button>
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Staples</button>
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Beverages</button>
+</div>
+</header>
+<!-- Desktop Layout Wrapper -->
+<div class="hidden md:flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container border-r border-outline-variant shadow-sm h-screen w-64 fixed left-0 top-0 flex flex-col pt-24 pb-md z-40">
+<div class="px-lg pb-lg mb-md border-b border-surface-variant">
+<h1 class="font-headline-md text-headline-md text-primary">LocalConnect</h1>
+</div>
+<div class="flex-1 overflow-y-auto px-md space-y-sm">
+<a class="flex items-center gap-md bg-primary-fixed text-on-primary-fixed font-bold rounded-xl px-md py-sm border-l-4 border-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+</div>
+</nav>
+<!-- Desktop Main Content Area -->
+<main class="ml-64 flex-1 p-lg bg-background min-h-screen">
+<!-- Desktop Header -->
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface mb-unit">Sharma Grocers</h2>
+<p class="text-body-md font-body-md text-secondary">Sec 14, Main Market • Verified Local</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Dairy</button>
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Snacks</button>
+<button class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-md py-sm rounded-[4px] hover:bg-surface-container-high transition-colors">Staples</button>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+<!-- Product Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+<div class="relative h-48 w-full bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="A warm, inviting image of a 1kg packet of premium Basmati rice on a clean white surface with soft, diffused natural lighting. The scene highlights the high quality of the local produce in a minimalist setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU11sIsh6HLAp0wvbxiDhK2Bm7Z6ZKUXx-7dAme4vshfRFYGxAVBDM7t-Z9Q5lrtLebZX3SRHOcbtdZ777PjT4z2Q0WvolxwEfHuPo5uyHj24HN7GbCm_kvuUwVKTy2ZyCL9GRCg0CECMYNcSSwzdCxi0-uLRQb5qwkdcZ7X7o-4oP6dgjzYEqgGCKLWLyP-eqHHhZNHv9qz5-Mpc646hOdxbOugRFQIHToZtSdDWSHCFm44gNGCGQDg"/>
+<div class="absolute top-sm left-sm bg-surface-container-lowest bg-opacity-90 px-sm py-unit rounded flex items-center gap-unit shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-tertiary" data-icon="check_circle">check_circle</span>
+<span class="text-label-sm font-label-sm text-on-surface">In Stock</span>
+</div>
+</div>
+<div class="p-md flex-1 flex flex-col justify-between">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-unit">Premium Basmati Rice</h3>
+<p class="text-body-sm font-body-sm text-secondary mb-md">1 kg</p>
+<div class="text-headline-md font-headline-md text-primary mb-md">₹ 180</div>
+</div>
+<div class="flex items-center justify-between border-t border-surface-variant pt-md">
+<div class="flex items-center gap-sm bg-surface-container rounded px-sm py-unit">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit"><span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span></button>
+<span class="text-body-md font-body-md text-on-surface w-6 text-center">1</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded flex items-center gap-sm hover:bg-primary-container transition-colors min-h-[48px]">
+                                Add <span class="material-symbols-outlined text-[18px]" data-icon="shopping_cart">shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+<div class="relative h-48 w-full bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, bright image of a bottle of fresh, cold pressed mustard oil. The rich amber color of the oil glows gently against a soft white background, evoking traditional cooking." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXrmgivX6hKprQEjrQY-PYLoVPPheeTSV6EB9k7IqaFybVrAGPCvlJD-0-J__HFRAe55bOZ-GJIolbWz2K4l3rMNyl7Ubpvw4T3H_96kUtaPWpuLWgKb-5OoE9VIXikiwtejjWvaNA_xem7ISGSGN51QFUWNpCjEhu9jORJNpRp6ABIc2J3FLgzVq3hpQFxH0SdL2V66u1ZfjzsoQjqA6FTLRsJc3fBr4qEDJORPGWg60BllCiX0cn1Q"/>
+<div class="absolute top-sm left-sm bg-surface-container-lowest bg-opacity-90 px-sm py-unit rounded flex items-center gap-unit shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-tertiary" data-icon="check_circle">check_circle</span>
+<span class="text-label-sm font-label-sm text-on-surface">In Stock</span>
+</div>
+</div>
+<div class="p-md flex-1 flex flex-col justify-between">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-unit">Cold Pressed Mustard Oil</h3>
+<p class="text-body-sm font-body-sm text-secondary mb-md">1 Litre</p>
+<div class="text-headline-md font-headline-md text-primary mb-md">₹ 220</div>
+</div>
+<div class="flex items-center justify-between border-t border-surface-variant pt-md">
+<div class="flex items-center gap-sm bg-surface-container rounded px-sm py-unit">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit"><span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span></button>
+<span class="text-body-md font-body-md text-on-surface w-6 text-center">0</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+<button class="bg-surface-container text-primary font-label-md text-label-md px-md py-sm rounded border border-primary flex items-center gap-sm hover:bg-surface-container-high transition-colors min-h-[48px]">
+                                Add <span class="material-symbols-outlined text-[18px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+<div class="relative h-48 w-full bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="A fresh, vibrant image of a bunch of green coriander leaves and mint neatly tied together, resting on a clean wooden board with soft lighting to emphasize freshness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG9qzVjnUz-q4oOEihm7HQU-2AmfL-SEx_1pCNQTjOlL3SEbRZl_YaRPS1MlhLLuPRG_Os8_P66pYFcKbz1Yx2B1dKweupkHbjXoz8oRgfmqGSX-1ydnJtNFC-NR9d30aFuHU6pedFwI4dwKREAuCQOq6k6vOl45tWKNjIZtxeoD1QnSguKqmUihnS9XRTK8m36zJFZuZ2-GdcXTV1m6R3ZIo06yn8050ksy19CWrh5s5MP5zwQBG-Lg"/>
+<div class="absolute top-sm left-sm bg-surface-container-lowest bg-opacity-90 px-sm py-unit rounded flex items-center gap-unit shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-tertiary" data-icon="check_circle">check_circle</span>
+<span class="text-label-sm font-label-sm text-on-surface">In Stock</span>
+</div>
+</div>
+<div class="p-md flex-1 flex flex-col justify-between">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-unit">Fresh Coriander Bunch</h3>
+<p class="text-body-sm font-body-sm text-secondary mb-md">approx. 100g</p>
+<div class="text-headline-md font-headline-md text-primary mb-md">₹ 25</div>
+</div>
+<div class="flex items-center justify-between border-t border-surface-variant pt-md">
+<div class="flex items-center gap-sm bg-surface-container rounded px-sm py-unit">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit"><span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span></button>
+<span class="text-body-md font-body-md text-on-surface w-6 text-center">2</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded flex items-center gap-sm hover:bg-primary-container transition-colors min-h-[48px]">
+                                Add <span class="material-symbols-outlined text-[18px]" data-icon="shopping_cart">shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Main Content (Grid repeated for mobile flow) -->
+<main class="md:hidden px-container-margin py-md space-y-md">
+<!-- Product Card 1 (Mobile List Style) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] p-md flex gap-md items-center relative overflow-hidden">
+<div class="h-24 w-24 rounded bg-surface-variant flex-shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A close-up of premium basmati rice grains in a small woven basket, softly lit against a minimal white background to evoke a sense of home and quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjIq22F2hIPhFOzCHtJs4okuDTMGh8BRJh5kNGly0LfoOAyXkO__g2NzvHkEpZcNNkDqvxaF6FsqSpurj_fiIp7Hh6O82iMarERrEVxDIi7Fp-VNxdilq_Ol1OK3glLWZm9m58ZIE7xlzeTYlLM4Y47M7Xo8M8KX_CmaCUgZQX_tpWUZVN2H_6DdhHZSpn3AEtEkOiZ99-ZErCo_6zWodito3P0Qzzbis1UJb4h2kHbH0bLGDE8OWHmQ"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-unit">
+<h3 class="text-body-md font-body-md font-semibold text-on-surface line-clamp-2">Premium Basmati Rice</h3>
+</div>
+<p class="text-label-sm font-label-sm text-secondary mb-sm">1 kg</p>
+<div class="flex items-center justify-between">
+<div class="text-headline-md font-headline-md text-primary">₹ 180</div>
+<div class="flex items-center gap-sm bg-surface-container rounded px-sm py-unit shadow-sm border border-outline-variant">
+<button class="text-primary p-unit"><span class="material-symbols-outlined text-[16px]" data-icon="remove">remove</span></button>
+<span class="text-label-md font-label-md text-on-surface w-4 text-center">1</span>
+<button class="text-primary p-unit"><span class="material-symbols-outlined text-[16px]" data-icon="add">add</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Card 2 (Mobile List Style) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] p-md flex gap-md items-center relative overflow-hidden">
+<div class="h-24 w-24 rounded bg-surface-variant flex-shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A rustic setting featuring a bottle of mustard oil next to some scattered mustard seeds on a light cream surface, warm and inviting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD42iiInJDpGilLxozmYTbhLCTCIdqfZ_mIdI78oZENJU1HkrLaNexyp9Sdg35ZBMVk2sJcvaQQ4idG5VZ0Bp3hOKJ29h8cInjN1tMVKLr_zK8LIhlgQq-kQ-v24pDcY8ZM0-g-JYBEnAluPliIpbicwgbTVLxLhpeUJiLqQFOBK0we3Ogbrv7GeqIAp8X4m-wClx1EWXYPycTdSoZdkDHdfJosyYvzflm6r_0Df7IJJ0gbkQcwTAvs3g"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-unit">
+<h3 class="text-body-md font-body-md font-semibold text-on-surface line-clamp-2">Cold Pressed Mustard Oil</h3>
+</div>
+<p class="text-label-sm font-label-sm text-secondary mb-sm">1 Litre</p>
+<div class="flex items-center justify-between">
+<div class="text-headline-md font-headline-md text-primary">₹ 220</div>
+<button class="bg-surface-container text-primary font-label-md text-label-md px-md py-sm rounded border border-primary flex items-center justify-center min-w-[80px]">
+                        Add
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Cart Summary Bar -->
+<div class="fixed bottom-0 left-0 w-full md:pl-64 z-50 p-sm md:p-lg bg-transparent pointer-events-none">
+<div class="bg-surface-container-lowest shadow-[0px_-4px_16px_rgba(26,26,26,0.1)] rounded-xl border border-surface-variant p-md flex justify-between items-center pointer-events-auto max-w-4xl mx-auto">
+<div class="flex flex-col">
+<div class="flex items-center gap-sm text-secondary mb-unit">
+<span class="material-symbols-outlined text-[18px]" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-md text-label-md">2 Items</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface">₹ 450</div>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded flex items-center gap-sm hover:bg-primary-container transition-colors min-h-[48px] shadow-sm">
+                Place order <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

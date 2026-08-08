@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LocalConnect - Main Browsing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#ffb59b",
+                        "on-tertiary-fixed-variant": "#0040a0",
+                        "inverse-surface": "#313030",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#e0e0dd",
+                        "on-primary-container": "#ffe9e3",
+                        "primary": "#973100",
+                        "surface-container": "#f0eded",
+                        "on-secondary-fixed-variant": "#464745",
+                        "tertiary": "#004cba",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#0062ec",
+                        "on-secondary-fixed": "#1a1c1a",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-container": "#e9edff",
+                        "secondary-fixed": "#e3e2e0",
+                        "surface-bright": "#fcf9f8",
+                        "outline-variant": "#e1bfb4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#380d00",
+                        "surface-container-high": "#eae7e7",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dcd9d9",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-container": "#c04000",
+                        "primary-fixed-dim": "#ffb59b",
+                        "tertiary-fixed-dim": "#b2c5ff",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdbcf",
+                        "on-primary-fixed-variant": "#812800",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#5e5f5d",
+                        "surface-tint": "#a93700",
+                        "secondary-fixed-dim": "#c7c6c4",
+                        "on-secondary-container": "#626361",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-tertiary-fixed": "#001847",
+                        "on-surface-variant": "#594139",
+                        "tertiary-fixed": "#dae2ff",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-background": "#1c1b1b",
+                        "background": "#fcf9f8",
+                        "outline": "#8d7167"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "container-margin": "20px",
+                        "sm": "8px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Public Sans"],
+                        "headline-lg": ["Public Sans"],
+                        "label-sm": ["Public Sans"],
+                        "label-md": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "headline-lg-mobile": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50 shadow-[0px_4px_12px_rgba(26,26,26,0.05)]">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">LocalConnect</span>
+</div>
+<!-- Search & Location (Web) -->
+<div class="hidden md:flex flex-1 max-w-2xl mx-lg items-center gap-sm">
+<div class="flex-1 relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-xl pr-md py-sm bg-surface-container-lowest border border-outline-variant rounded-full focus:outline-none focus:border-primary text-body-md font-body-md transition-colors" placeholder="Search shops, products..." type="text"/>
+</div>
+<div class="flex items-center gap-xs bg-surface-container-low px-md py-sm rounded-full cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="location_on">location_on</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Delivering to: <span class="font-bold text-on-surface">Karmala</span></span>
+</div>
+</div>
+<div class="flex items-center gap-sm text-primary dark:text-primary-fixed-dim">
+<button class="p-xs hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Mobile Search & Location (Only visible on small screens) -->
+<div class="md:hidden px-container-margin py-md bg-surface border-b border-surface-variant space-y-md sticky top-[68px] z-40 shadow-[0px_4px_12px_rgba(26,26,26,0.05)]">
+<div class="flex items-center gap-xs cursor-pointer">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="location_on">location_on</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Delivering to: <span class="font-bold text-on-surface">Karmala</span></span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm ml-auto" data-icon="expand_more">expand_more</span>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-xl pr-md py-sm bg-surface-container-lowest border border-outline-variant rounded-full focus:outline-none focus:border-primary text-body-md font-body-md transition-colors" placeholder="Search shops..." type="text"/>
+</div>
+</div>
+<!-- Main Content Layout with SideNav on Desktop -->
+<div class="flex flex-1 w-full">
+<!-- SideNavBar (Web) -->
+<nav class="hidden md:flex flex-col w-64 h-screen docked left-0 bg-surface-container-lowest dark:bg-surface-container border-r border-outline-variant shadow-sm pt-24 pb-md fixed top-0 left-0 z-40">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A warm, brightly lit portrait of a shop owner in a cozy, minimalist setting, smiling softly. Light mode aesthetic with terracotta accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxWe13aI0MRjtQxqT3k6E7vokAtaHRUu8Cr4zxeOWX3T7mcvC2V5RHqAN7MzX5usdBgvtQaxe-eFjsG2uTgeNCEuB83cyGWWVnndxv4maVoPGjbIePrAxFljFw7qjtB-ktsu0-jz4CrVG-hiuNB4gL4FlAJWi-ub8fyQLHNdYzl8e9D8sNYcfXOz50LuoWWF11bQ9PcmWnKHOZ2VYbdWd4oiCABfRFhE1nEFDNUHNL_fLXcr_MahoVwg"/>
+</div>
+<div>
+<div class="font-label-md text-label-md font-bold text-on-surface">Welcome</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Manage your shop</div>
+</div>
+</div>
+</div>
+<div class="flex-1 px-md space-y-sm">
+<!-- Active Item -->
+<a class="flex items-center gap-md bg-primary-fixed text-on-primary-fixed font-bold rounded-xl px-md py-sm border-l-4 border-primary transition-all font-label-md text-label-md hover:bg-surface-container-high dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>Home</span>
+</a>
+<!-- Inactive Items -->
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl font-label-md text-label-md hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl font-label-md text-label-md hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl font-label-md text-label-md hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all mt-auto" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help</span>
+</a>
+</div>
+</nav>
+<!-- Canvas -->
+<main class="flex-1 md:ml-64 p-container-margin md:p-lg space-y-xl">
+<!-- Filter Pills -->
+<section>
+<h2 class="font-headline-md text-headline-md font-bold mb-md text-on-surface">Explore Categories</h2>
+<div class="flex gap-sm overflow-x-auto pb-sm hide-scrollbar">
+<button class="whitespace-nowrap px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="storefront">storefront</span>
+                        All
+                    </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors border border-transparent">
+                        Kirana
+                    </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors border border-transparent">
+                        Hardware
+                    </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors border border-transparent">
+                        Pharmacy
+                    </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors border border-transparent">
+                        Grocery
+                    </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors border border-transparent">
+                        Dairy
+                    </button>
+</div>
+</section>
+<!-- Shop Grid -->
+<section>
+<div class="flex justify-between items-end mb-md">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Local Shops Near You</h2>
+<button class="font-label-md text-label-md text-primary hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-surface-variant overflow-hidden hover:shadow-md transition-shadow group cursor-pointer relative">
+<div class="h-32 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A bright, inviting storefront of a local Indian grocery store (Kirana) with neatly stacked fresh produce and warm lighting. Shot in a minimalist, clean aesthetic emphasizing community trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1DgWBNRei3Au2oJ_vhqWXC1ZDltPskQESsbC80Y5EBCiJfA6h9mIWFVkOufzRRYGy7ZV7DoZg1VP5w8lrZ9ctV6Nv9LhtI6l4C4RSsv9X5qmg4EVZM0vKfU8MDI4TksvK_MlenAbvEYXUQYwyQtLWD21Bdr_rNMagLhxroSJYedo76GK0H-z8Mnodmm-bJDlxIaPGYFtVdqd_Y6__dAd_ebmnEQm17cGqKR3M6fuFKL2JUH859esSFg"/>
+<div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-xs py-xs rounded flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#10b981]"></div>
+<span class="font-label-sm text-label-sm text-on-surface">Open</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">Sharma General Store</h3>
+<div class="bg-primary-container text-on-primary-container p-xs rounded-full">
+<span class="material-symbols-outlined text-sm" data-icon="shopping_basket">shopping_basket</span>
+</div>
+</div>
+<div class="flex gap-xs mb-md">
+<span class="bg-surface-container-low text-on-surface-variant px-xs py-xs rounded font-label-sm text-label-sm">Kirana</span>
+<span class="bg-surface-container-low text-on-surface-variant px-xs py-xs rounded font-label-sm text-label-sm">Grocery</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm pt-sm border-t border-surface-variant">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="directions_walk">directions_walk</span>
+<span>5 mins away • Delivery available</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-surface-variant overflow-hidden hover:shadow-md transition-shadow group cursor-pointer relative">
+<div class="h-32 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A clean, organized interior of a modern pharmacy with white shelves and warm overhead lighting. Minimalist style, conveying reliability and health." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoSfp9z2KAnR-2fv8VBYVtOpieuE1wI7z4xNTDTroYSbBkQgoFGiHMA5-rkF5PfJtWVaGgTUJAHfrpzA_OsLSXJLzO89b7rXkiJeE6vUtcgEa3WdDWV-YIt8UoecwaBzIzNgYsix215FMGN7D69UqrmG5sSes9DSLZX6FVwYme_efle_rVmRjnj6Jlmdz2VelbhGKxZeKUlRBAnaOILsEJG2fWIgkbIRv0r_OFYxZihrP_Zb0qah6kaw"/>
+<div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-xs py-xs rounded flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#10b981]"></div>
+<span class="font-label-sm text-label-sm text-on-surface">Open</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">Apollo Pharmacy</h3>
+<div class="bg-tertiary-container text-on-tertiary-container p-xs rounded-full">
+<span class="material-symbols-outlined text-sm" data-icon="local_pharmacy">local_pharmacy</span>
+</div>
+</div>
+<div class="flex gap-xs mb-md">
+<span class="bg-surface-container-low text-on-surface-variant px-xs py-xs rounded font-label-sm text-label-sm">Pharmacy</span>
+<span class="bg-surface-container-low text-on-surface-variant px-xs py-xs rounded font-label-sm text-label-sm">Medicine</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm pt-sm border-t border-surface-variant">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="directions_car">directions_car</span>
+<span>15 mins away • Instant Delivery</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-surface-variant overflow-hidden hover:shadow-md transition-shadow group cursor-pointer relative">
+<div class="h-32 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A well-lit hardware store aisle featuring neatly arranged tools and supplies. Warm terracotta accents in the environment, clean and professional look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL1w7wgCxie-E47OYzluGDvhOEJxoRFl6UjbYdHIZoQPyaOCD1SUyRo5RuTsUUH3BKiJb0zVwRHDD85irQhscNC46AZyC0RvbFMLbhbQSE-QwAIglRpe8U0E406HwPVQ9SAs9q79_EnOKbIpo1AlhsRcVxOO9FdBHvVmerEobPn9-aBCy3CWcn6gf7RsNzEwpVvoN9HVeyEMqxq_tZ1ZqV-Yqe6W_2JK9zAsGeboEyQQGQRfGwCFFDdg"/>
+<div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-xs py-xs rounded flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-label-sm text-label-sm text-on-surface">Closed</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">Patil Hardware</h3>
+<div class="bg-surface-variant text-on-surface-variant p-xs rounded-full">
+<span class="material-symbols-outlined text-sm" data-icon="handyman">handyman</span>
+</div>
+</div>
+<div class="flex gap-xs mb-md">
+<span class="bg-surface-container-low text-on-surface-variant px-xs py-xs rounded font-label-sm text-label-sm">Hardware</span>
+<span class="bg-surface-container-low text-on-surface-variant px-xs py-xs rounded font-label-sm text-label-sm">Tools</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm pt-sm border-t border-surface-variant">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="schedule">schedule</span>
+<span>Opens tomorrow at 9 AM</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<style>
+        /* Hide scrollbar for category pills */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

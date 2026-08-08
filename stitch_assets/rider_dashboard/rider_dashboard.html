@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Delivery Rider Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#eae7e7",
+                        "inverse-primary": "#ffb59b",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#a93700",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#594139",
+                        "surface-bright": "#fcf9f8",
+                        "on-secondary-fixed-variant": "#464745",
+                        "background": "#fcf9f8",
+                        "primary": "#973100",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#e0e0dd",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#ffe9e3",
+                        "outline-variant": "#e1bfb4",
+                        "on-tertiary-container": "#e9edff",
+                        "on-primary-fixed": "#380d00",
+                        "secondary-fixed-dim": "#c7c6c4",
+                        "surface-container": "#f0eded",
+                        "on-tertiary-fixed": "#001847",
+                        "on-tertiary-fixed-variant": "#0040a0",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "surface-variant": "#e5e2e1",
+                        "on-secondary-fixed": "#1a1c1a",
+                        "on-primary-fixed-variant": "#812800",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1c1b1b",
+                        "primary-fixed": "#ffdbcf",
+                        "primary-container": "#c04000",
+                        "outline": "#8d7167",
+                        "tertiary-container": "#0062ec",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#626361",
+                        "tertiary": "#004cba",
+                        "tertiary-fixed-dim": "#b2c5ff",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary": "#5e5f5d",
+                        "surface": "#fcf9f8",
+                        "secondary-fixed": "#e3e2e0",
+                        "tertiary-fixed": "#dae2ff",
+                        "surface-dim": "#dcd9d9",
+                        "primary-fixed-dim": "#ffb59b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "20px",
+                        "unit": "4px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Public Sans"],
+                        "headline-lg": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "headline-lg-mobile": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "label-sm": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "headline-xl": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col relative pb-24">
+<!-- Top Navigation Anchor (Shared Component Schema) -->
+<nav class="flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50 bg-surface dark:bg-surface-dim shadow-[0px_4px_12px_rgba(26,26,26,0.05)]">
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">LocalConnect</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim cursor-pointer hover:bg-surface-container-low p-2 rounded-full transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-lg space-y-lg max-w-2xl mx-auto w-full">
+<!-- Status Toggle -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-outline-variant flex items-center justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Work Status</h2>
+<p class="font-body-sm text-body-sm text-secondary mt-xs">You are currently receiving orders.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-14 h-7 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Active Assigned Orders</h3>
+<!-- Order List (Stacked Cards) -->
+<div class="space-y-md">
+<!-- Card 1: Ready for Pickup -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-outline-variant flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div>
+<span class="inline-block bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm px-sm py-xs rounded-full mb-sm border border-outline-variant">Assigned</span>
+<div class="font-label-md text-label-md text-on-surface">Order #LC-8924</div>
+</div>
+<span class="font-label-md text-label-md text-primary">₹ 450</span>
+</div>
+<div class="space-y-sm relative">
+<div class="absolute left-[11px] top-[24px] bottom-[24px] w-px bg-outline-variant"></div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-tertiary" data-icon="storefront">storefront</span>
+<span class="font-body-md text-body-md text-on-surface">Sharma Grocers, Main Bazaar</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<span class="font-body-md text-body-md text-on-surface">Karmala Sector 4, House 12</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-sm rounded-lg">
+<p class="font-body-sm text-body-sm text-secondary">2 items • 5kg Total</p>
+</div>
+<button class="w-full bg-tertiary text-on-tertiary font-label-md text-label-md py-sm rounded-lg min-h-[48px] hover:bg-tertiary-container hover:text-on-tertiary-container transition-colors shadow-sm">
+                    Mark Picked Up
+                </button>
+</div>
+<!-- Card 2: Out for Delivery -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-outline-variant flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div>
+<span class="inline-block bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm px-sm py-xs rounded-full mb-sm border border-outline-variant">Picked Up</span>
+<div class="font-label-md text-label-md text-on-surface">Order #LC-8919</div>
+</div>
+<span class="font-label-md text-label-md text-primary">₹ 120</span>
+</div>
+<div class="space-y-sm relative">
+<div class="absolute left-[11px] top-[24px] bottom-[24px] w-px bg-outline-variant"></div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="storefront">storefront</span>
+<span class="font-body-md text-body-md text-secondary line-through">City Pharmacy</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<span class="font-body-md text-body-md text-on-surface">Riverside Apartments, Flat 4B</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-sm rounded-lg">
+<p class="font-body-sm text-body-sm text-secondary">1 item • Light package</p>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-sm rounded-lg min-h-[48px] hover:bg-primary-container transition-colors shadow-sm">
+                    Mark Delivered
+                </button>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Stats Strip -->
+<div class="fixed bottom-0 left-0 right-0 bg-surface-container-high border-t border-outline-variant shadow-[0px_-4px_12px_rgba(26,26,26,0.05)] z-40 p-md flex justify-around items-center">
+<div class="text-center">
+<span class="block font-headline-md text-headline-md text-on-surface">8</span>
+<span class="font-label-sm text-label-sm text-secondary">Deliveries Today</span>
+</div>
+<div class="w-px h-8 bg-outline-variant"></div>
+<div class="text-center">
+<span class="block font-headline-md text-headline-md text-primary">2</span>
+<span class="font-label-sm text-label-sm text-secondary">Active Orders</span>
+</div>
+</div>
+</body></html>

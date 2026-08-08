@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LocalConnect Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#ffb59b",
+                        "secondary-fixed-dim": "#c7c6c4",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#e3e2e0",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary": "#004cba",
+                        "on-primary-container": "#ffe9e3",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#b2c5ff",
+                        "on-primary-fixed-variant": "#812800",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-container-high": "#eae7e7",
+                        "secondary": "#5e5f5d",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#c04000",
+                        "surface-container": "#f0eded",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "outline-variant": "#e1bfb4",
+                        "surface-variant": "#e5e2e1",
+                        "tertiary-container": "#0062ec",
+                        "on-surface-variant": "#594139",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "on-background": "#1c1b1b",
+                        "surface-tint": "#a93700",
+                        "primary-fixed-dim": "#ffb59b",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-container": "#626361",
+                        "on-primary-fixed": "#380d00",
+                        "on-tertiary-fixed": "#001847",
+                        "on-tertiary-container": "#e9edff",
+                        "surface-dim": "#dcd9d9",
+                        "surface": "#fcf9f8",
+                        "on-secondary-fixed-variant": "#464745",
+                        "outline": "#8d7167",
+                        "on-tertiary-fixed-variant": "#0040a0",
+                        "primary-fixed": "#ffdbcf",
+                        "background": "#fcf9f8",
+                        "tertiary-fixed": "#dae2ff",
+                        "primary": "#973100",
+                        "on-secondary-fixed": "#1a1c1a",
+                        "secondary-container": "#e0e0dd",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "label-md": ["Public Sans"],
+                        "label-sm": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "headline-lg": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "headline-xl": ["Public Sans"],
+                        "body-md": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen antialiased flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface dark:bg-surface-dim shadow-[0px_4px_12px_rgba(26,26,26,0.05)] docked full-width top-0 flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50">
+<!-- Logo -->
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">
+            LocalConnect
+        </div>
+<!-- Right Side: Role Selector & Avatar -->
+<div class="flex items-center gap-md">
+<!-- Segmented Role Selector (Pill Style) -->
+<div class="hidden md:flex bg-surface-container-highest rounded-full p-xs gap-xs border border-outline-variant">
+<button class="px-md py-sm rounded-full text-label-md font-label-md text-secondary hover:bg-surface-container-low transition-colors">
+                    Customer
+                </button>
+<button class="px-md py-sm rounded-full text-label-md font-label-md bg-primary-container text-on-primary-container shadow-sm transition-colors font-bold">
+                    Merchant
+                </button>
+<button class="px-md py-sm rounded-full text-label-md font-label-md text-secondary hover:bg-surface-container-low transition-colors">
+                    Rider
+                </button>
+<button class="px-md py-sm rounded-full text-label-md font-label-md text-secondary hover:bg-surface-container-low transition-colors">
+                    Admin
+                </button>
+</div>
+<!-- Trailing Action / Avatar -->
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-surface-container-low text-primary hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Side Navigation Bar -->
+<aside class="hidden md:flex flex-col w-64 bg-surface-container-lowest dark:bg-surface-container border-r border-outline-variant pt-lg pb-md px-md gap-sm shrink-0">
+<!-- User Header (Optional, kept structural per JSON prompt) -->
+<div class="flex items-center gap-md mb-lg px-sm">
+<img class="w-12 h-12 rounded-full object-cover bg-surface-variant" data-alt="A small, circular avatar portrait of a friendly Indian shopkeeper, illuminated by warm, natural light, set against a bright, minimalistic background. The style is professional yet approachable, fitting a community-focused dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0X-lzQrE35eysQI4sPc5bl-hVtbEzwk5oVQDDgPvqYV0lvHSaihokoEnHhe8icuMZyqqkxDw4ScPmqP7jpcjW6T419i8jiAbnqMl2YPbUb72_QgvuHbRgcQ6PvPSBPifRfxzK4QqZX_g2t9MIYkYFP41FSeox3hYG3YHGTBgM3Ws6fDKbqpLT7zddN69SG2j637lRQi0610Vcah0f4dJs4gXl9HYUS9VxA2HwdOLxnMxsfh06NWRNmg"/>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Welcome</h3>
+<p class="font-label-sm text-label-sm text-secondary">Manage your shop</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-xs">
+<!-- Active Item -->
+<a class="flex items-center gap-md bg-primary-fixed text-on-primary-fixed font-bold rounded-xl px-md py-sm border-l-4 border-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Payments</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-md text-secondary dark:text-secondary-fixed-dim px-md py-sm rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+</nav>
+</aside>
+<!-- Canvas / Main Dashboard Content -->
+<main class="flex-1 p-container-margin overflow-y-auto bg-background">
+<div class="max-w-6xl mx-auto flex flex-col gap-lg h-full">
+<!-- Page Header -->
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Overview</h1>
+<p class="font-body-md text-body-md text-secondary mt-xs">Here is what is happening with your shop today.</p>
+</div>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-[0px_4px_12px_rgba(26,26,26,0.05)] h-12 flex items-center justify-center">
+                        New Order
+                    </button>
+</div>
+<!-- Empty State / Placeholder Card -->
+<div class="flex-1 bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-surface-container p-xl flex flex-col items-center justify-center text-center min-h-[400px]">
+<span class="material-symbols-outlined text-outline text-6xl mb-md">dashboard_customize</span>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-sm">Dashboard Ready</h2>
+<p class="font-body-md text-body-md text-secondary max-w-md mx-auto">
+                        Your layout is structured and styled according to the warm minimalist design system. This area is ready to be populated with bento grids, charts, or lists.
+                    </p>
+</div>
+</div>
+</main>
+</div>
+</body></html>
