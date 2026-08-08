@@ -13,8 +13,7 @@ import {
   signInUser,
   signUpUser,
   signOutUser,
-  getStoredSession,
-  DEMO_ACCOUNTS
+  getStoredSession
 } from '../lib/supabase';
 
 const AppContext = createContext();
@@ -31,12 +30,12 @@ export function AppProvider({ children }) {
   const [riders, setRiders] = useState([]);
   const [orders, setOrders] = useState([]);
   
-  const [selectedMerchantId, setSelectedMerchantId] = useState('m2222222-2222-2222-2222-222222222222'); // VSC Kanedi Hardware default
-  const [activeOrderId, setActiveOrderId] = useState('o1001');
+  const [selectedMerchantId, setSelectedMerchantId] = useState('m2222222-2222-2222-2222-222222222222');
+  const [activeOrderId, setActiveOrderId] = useState('TD1024');
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load state from DB/Fallback
+  // Load state from DB
   const refreshData = useCallback(async () => {
     try {
       const [m, p, r, o] = await Promise.all([
@@ -80,13 +79,6 @@ export function AppProvider({ children }) {
     return res;
   };
 
-  const demoLogin = async (targetRole) => {
-    const demo = DEMO_ACCOUNTS[targetRole] || DEMO_ACCOUNTS.customer;
-    const res = await signInUser(demo.email, demo.password);
-    setSession(res);
-    return res;
-  };
-
   const logout = async () => {
     await signOutUser();
     setSession(null);
@@ -99,90 +91,83 @@ export function AppProvider({ children }) {
       const existingIndex = prev.findIndex(item => item.product.id === product.id);
       if (existingIndex > -1) {
         const updated = [...prev];
-        const newQty = updated[existingIndex].qty + qty;
-        if (newQty <= 0) {
-          return updated.filter((_, idx) => idx !== existingIndex);
-        }
-        updated[existingIndex] = { ...updated[existingIndex], qty: newQty };
+        updated[existingIndex].qty += qty;
         return updated;
-      } else {
-        if (qty <= 0) return prev;
-        return [...prev, { product, qty }];
       }
+      return [...prev, { product, qty }];
     });
   };
 
-  const updateCartQty = (productId, qty) => {
+  const updateCartQty = (productId, delta) => {
     setCart(prev => {
-      if (qty <= 0) {
-        return prev.filter(item => item.product.id !== productId);
-      }
-      return prev.map(item => item.product.id === productId ? { ...item, qty } : item);
+      return prev
+        .map(item => {
+          if (item.product.id === productId) {
+            const newQty = item.qty + delta;
+            return newQty > 0 ? { ...item, qty: newQty } : null;
+          }
+          return item;
+        })
+        .filter(Boolean);
     });
   };
 
   const clearCart = () => setCart([]);
 
-  // Place Order
-  const handlePlaceOrder = async () => {
+  const cartTotal = cart.reduce(
+    (sum, item) => sum + item.product.price * item.qty,
+    0
+  );
+
+  // Business actions
+  const placeOrder = async () => {
     if (cart.length === 0) return null;
 
-    const totalAmount = cart.reduce((acc, item) => acc + (item.product.price * item.qty), 0);
-    const itemsPayload = cart.map(item => ({
-      name: item.product.name,
-      qty: item.qty,
-      price: item.product.price
+    const merchantId = cart[0].product.merchant_id;
+    const itemsPayload = cart.map(i => ({
+      id: i.product.id,
+      name: i.product.name,
+      price: i.product.price,
+      qty: i.qty
     }));
 
-    const newOrder = await dbCreateOrder({
-      customer_name: profile?.full_name || 'Shreyas',
-      merchant_id: selectedMerchantId,
+    const created = await dbCreateOrder({
+      customer_name: profile?.full_name || 'Customer',
+      merchant_id: merchantId,
       items: itemsPayload,
-      total: totalAmount
+      total: cartTotal
     });
 
-    setCart([]);
-    if (newOrder?.id) {
-      setActiveOrderId(newOrder.id);
+    if (created) {
+      setActiveOrderId(created.id);
+      clearCart();
+      await refreshData();
+      return created;
     }
-    await refreshData();
-    return newOrder;
+    return null;
   };
 
-  // Merchant Accept Order (with Smart Nearest Rider Allocation Algorithm)
-  const handleAcceptOrder = async (orderId, merchantId) => {
-    const assignedRider = await dbAssignNearestRider(orderId, merchantId || selectedMerchantId);
+  const acceptOrder = async (orderId, merchantId) => {
+    const assignedRider = await dbAssignNearestRider(orderId, merchantId);
     await refreshData();
     return assignedRider;
   };
 
-  // Advance Order Status
-  const handleAdvanceOrderStatus = async (orderId, nextStatus) => {
-    const currentOrder = orders.find(o => o.id === orderId);
-    await dbUpdateOrderStatus(orderId, nextStatus, currentOrder?.rider_id);
+  const updateOrderStatus = async (orderId, nextStatus, riderId = null) => {
+    const updated = await dbUpdateOrderStatus(orderId, nextStatus, riderId);
+    await refreshData();
+    return updated;
+  };
 
-    if (nextStatus === 'delivered' && currentOrder?.rider_id) {
-      await dbUpdateRiderStatus(currentOrder.rider_id, 'available');
-    }
+  const updateRiderStatus = async (riderId, newStatus) => {
+    await dbUpdateRiderStatus(riderId, newStatus);
     await refreshData();
   };
 
-  // Add Product
-  const handleAddProduct = async (productData) => {
-    await dbAddProduct({
-      ...productData,
-      merchant_id: selectedMerchantId
-    });
+  const addNewProduct = async (productData) => {
+    const created = await dbAddProduct(productData);
     await refreshData();
-  };
-
-  // Toggle Rider Status
-  const handleToggleRiderStatus = async (riderId) => {
-    const r = riders.find(item => item.id === riderId);
-    if (!r) return;
-    const nextStatus = r.status === 'available' ? 'busy' : 'available';
-    await dbUpdateRiderStatus(riderId, nextStatus);
-    await refreshData();
+    return created;
   };
 
   const value = {
@@ -190,10 +175,6 @@ export function AppProvider({ children }) {
     user,
     profile,
     role,
-    login,
-    signUp,
-    demoLogin,
-    logout,
     merchants,
     products,
     riders,
@@ -203,23 +184,23 @@ export function AppProvider({ children }) {
     activeOrderId,
     setActiveOrderId,
     cart,
+    cartTotal,
+    loading,
+    login,
+    signUp,
+    logout,
     addToCart,
     updateCartQty,
     clearCart,
-    placeOrder: handlePlaceOrder,
-    acceptOrder: handleAcceptOrder,
-    advanceOrderStatus: handleAdvanceOrderStatus,
-    addNewProduct: handleAddProduct,
-    toggleRiderStatus: handleToggleRiderStatus,
-    refreshData,
-    loading
+    placeOrder,
+    acceptOrder,
+    updateOrderStatus,
+    updateRiderStatus,
+    addNewProduct,
+    refreshData
   };
 
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
 export function useApp() {
