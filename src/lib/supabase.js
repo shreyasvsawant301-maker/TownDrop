@@ -13,39 +13,7 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Pre-created Demo Accounts Definition
-export const DEMO_ACCOUNTS = {
-  customer: {
-    email: 'customer@localconnect.demo',
-    password: 'password123',
-    full_name: 'Shreyas',
-    phone: '+91 98765 00001',
-    role: 'customer'
-  },
-  merchant: {
-    email: 'merchant@localconnect.demo',
-    password: 'password123',
-    full_name: 'VSC Kanedi Hardware',
-    phone: '+91 98765 00002',
-    role: 'merchant'
-  },
-  rider: {
-    email: 'rider@localconnect.demo',
-    password: 'password123',
-    full_name: 'Vikram Singh',
-    phone: '+91 98765 43210',
-    role: 'rider'
-  },
-  admin: {
-    email: 'admin@localconnect.demo',
-    password: 'password123',
-    full_name: 'Platform Ops Admin',
-    phone: '+91 98765 00000',
-    role: 'admin'
-  }
-};
-
-// Initial Fallback Seed Data
+// Initial Seed Data for Market Discovery
 const INITIAL_MERCHANTS = [
   {
     id: 'm1111111-1111-1111-1111-111111111111',
@@ -182,62 +150,88 @@ function notifyFallbackSubscribers() {
   }
 }
 
-// AUTH FUNCTIONS
+// DIRECT LIVE SUPABASE AUTHENTICATION (NO PREMADE MOCK LOGINS)
 export async function signInUser(email, password) {
   if (isSupabaseConfigured && supabase) {
-    let { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    
-    if (error && (error.message.includes('Invalid login credentials') || error.status === 400)) {
-      const demoKey = Object.keys(DEMO_ACCOUNTS).find(k => DEMO_ACCOUNTS[k].email === email);
-      const fullName = demoKey ? DEMO_ACCOUNTS[demoKey].full_name : email.split('@')[0];
-      const role = demoKey ? DEMO_ACCOUNTS[demoKey].role : 'customer';
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-      const signUpRes = await supabase.auth.signUp({ email, password });
-      if (signUpRes.data?.user) {
-        data = signUpRes.data;
-        await supabase.from('profiles').upsert([{ id: data.user.id, full_name: fullName, role }]);
-        error = null;
-      }
-    }
+    if (data?.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      const userProfile = profile || {
+        id: data.user.id,
+        full_name: email.split('@')[0],
+        role: 'customer'
+      };
 
-    if (!error && data?.user) {
-      const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-      const demoKey = Object.keys(DEMO_ACCOUNTS).find(k => DEMO_ACCOUNTS[k].email === email);
-      const userRole = profile?.role || (demoKey ? DEMO_ACCOUNTS[demoKey].role : 'customer');
-      const fullName = profile?.full_name || (demoKey ? DEMO_ACCOUNTS[demoKey].full_name : email.split('@')[0]);
-
-      const userProfile = { id: data.user.id, full_name: fullName, role: userRole };
       setLocalStore('active_session', { user: data.user, profile: userProfile });
       return { user: data.user, profile: userProfile };
     }
   }
 
-  const matchedDemoKey = Object.keys(DEMO_ACCOUNTS).find(k => DEMO_ACCOUNTS[k].email === email);
-  if (matchedDemoKey) {
-    const demo = DEMO_ACCOUNTS[matchedDemoKey];
-    const mockUser = { id: `user_${matchedDemoKey}`, email: demo.email };
-    const mockProfile = { id: mockUser.id, full_name: demo.full_name, role: demo.role, phone: demo.phone };
-    setLocalStore('active_session', { user: mockUser, profile: mockProfile });
-    return { user: mockUser, profile: mockProfile };
-  }
-
+  // Fallback offline session
   const mockUser = { id: `user_${Date.now()}`, email };
   const mockProfile = { id: mockUser.id, full_name: email.split('@')[0], role: 'customer' };
   setLocalStore('active_session', { user: mockUser, profile: mockProfile });
   return { user: mockUser, profile: mockProfile };
 }
 
-export async function signUpUser(email, password, fullName, role = 'customer') {
+export async function signUpUser(email, password, fullName, role = 'customer', phone = '') {
   if (isSupabaseConfigured && supabase) {
+    // 1. Sign up user in Supabase Auth
     const { data, error } = await supabase.auth.signUp({ email, password });
-    if (!error && data?.user) {
-      await supabase.from('profiles').upsert([{ id: data.user.id, full_name: fullName, role }]);
-      const profile = { id: data.user.id, full_name: fullName, role };
-      setLocalStore('active_session', { user: data.user, profile });
-      return { user: data.user, profile };
+    if (error) throw error;
+    if (!data?.user) throw new Error('Account registration failed.');
+
+    const userId = data.user.id;
+
+    // 2. Insert into public.profiles
+    const profilePayload = {
+      id: userId,
+      full_name: fullName,
+      role: role,
+      phone: phone
+    };
+    await supabase.from('profiles').upsert([profilePayload]);
+
+    // 3. If Merchant, auto-create Merchant shop entry
+    if (role === 'merchant') {
+      await supabase.from('merchants').insert([{
+        owner_id: userId,
+        name: fullName,
+        category: 'General Shop',
+        town: 'Karmala',
+        approved: true,
+        rating: 4.8,
+        lat: 18.4088,
+        lng: 75.1953,
+        image_url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=600&q=80'
+      }]);
     }
+
+    // 4. If Rider, auto-create Rider entry
+    if (role === 'rider') {
+      await supabase.from('riders').insert([{
+        user_id: userId,
+        name: fullName,
+        phone: phone || '+91 98765 43210',
+        status: 'available',
+        lat: 18.4060,
+        lng: 75.1930
+      }]);
+    }
+
+    const userProfile = { id: userId, full_name: fullName, role, phone };
+    setLocalStore('active_session', { user: data.user, profile: userProfile });
+    return { user: data.user, profile: userProfile };
   }
 
+  // Fallback offline session
   const mockUser = { id: `user_${Date.now()}`, email };
   const mockProfile = { id: mockUser.id, full_name: fullName, role };
   setLocalStore('active_session', { user: mockUser, profile: mockProfile });
@@ -295,7 +289,7 @@ export async function fetchOrders() {
 export async function createOrder(newOrderData) {
   const orderObj = {
     id: `TD${Math.floor(1000 + Math.random() * 9000)}`,
-    customer_name: newOrderData.customer_name || 'Shreyas',
+    customer_name: newOrderData.customer_name || 'Customer',
     merchant_id: newOrderData.merchant_id,
     rider_id: null,
     items: newOrderData.items,
