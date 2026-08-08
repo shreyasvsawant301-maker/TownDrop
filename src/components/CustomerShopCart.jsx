@@ -9,14 +9,16 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
     cart,
     addToCart,
     updateCartQty,
-    placeOrder
+    placeOrder,
+    addNewProduct,
+    refreshData
   } = useApp();
 
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const merchant = merchants.find(m => m.id === selectedMerchantId) || merchants[0];
-  const merchantProducts = products.filter(p => p.merchant_id === (merchant?.id || selectedMerchantId));
+  const merchantProducts = products.filter(p => p.merchant_id === merchant?.id);
 
   const categories = ['All', ...new Set(merchantProducts.map(p => p.category || 'General'))];
 
@@ -34,13 +36,27 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
     if (cart.length === 0) return;
     setIsPlacingOrder(true);
     try {
-      const order = await placeOrder('Rahul Sharma');
+      const order = await placeOrder();
       if (onOrderPlaced) onOrderPlaced(order?.id);
     } catch (e) {
       console.error('Failed to place order', e);
     } finally {
       setIsPlacingOrder(false);
     }
+  };
+
+  const handleSeedShopProducts = async () => {
+    if (!merchant) return;
+    const sampleItems = [
+      { merchant_id: merchant.id, name: `${merchant.name} Special Combo`, price: 150, stock: 20, unit: '1 pack', category: merchant.category || 'General', image_url: merchant.image_url },
+      { merchant_id: merchant.id, name: 'Local Quality Pack', price: 90, stock: 35, unit: '500g', category: merchant.category || 'General', image_url: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80' },
+      { merchant_id: merchant.id, name: 'Daily Essential Item', price: 45, stock: 50, unit: '1 unit', category: merchant.category || 'General', image_url: 'https://images.unsplash.com/photo-1588879460405-5609fa84742a?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    for (const item of sampleItems) {
+      await addNewProduct(item);
+    }
+    await refreshData();
   };
 
   return (
@@ -50,7 +66,7 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
         <div>
           <button
             onClick={onBackToShops}
-            className="flex items-center gap-xs text-primary font-label-md text-label-md hover:underline mb-xs"
+            className="flex items-center gap-xs text-primary font-label-md text-label-md hover:underline mb-xs font-bold"
           >
             <span className="material-symbols-outlined text-base">arrow_back</span>
             Back to Shops
@@ -59,183 +75,185 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
             {merchant?.name || 'Local Shop'}
           </h1>
           <p className="text-body-md text-secondary">
-            {merchant?.town || 'Karmala'} • {merchant?.category} • Verified Local
+            📍 {merchant?.town || 'Karmala'} • Category: <strong className="text-primary">{merchant?.category}</strong> • Verified Town Merchant
           </p>
         </div>
 
         {/* Category Chips */}
-        <div className="flex gap-sm overflow-x-auto w-full md:w-auto pb-xs">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-md py-sm rounded-md font-label-md text-label-md transition-colors whitespace-nowrap ${
-                selectedCategory === cat
-                  ? 'bg-primary text-on-primary font-bold'
-                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {merchantProducts.length > 0 && (
+          <div className="flex gap-sm overflow-x-auto w-full md:w-auto pb-xs">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-md py-sm rounded-full font-label-md text-label-md transition-colors whitespace-nowrap border ${
+                  selectedCategory === cat
+                    ? 'bg-primary text-on-primary font-bold border-primary shadow-xs'
+                    : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container-high'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Main Grid: Products + Cart Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-xl">
         {/* Product Grid */}
         <div className="lg:col-span-2 space-y-md">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-md">
-            {filteredProducts.map(product => {
-              const cartItem = cart.find(i => i.product.id === product.id);
-              const currentQty = cartItem ? cartItem.qty : 0;
-
-              return (
-                <div
-                  key={product.id}
-                  className="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-surface-variant overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow"
-                >
-                  <div>
-                    <div className="relative h-44 w-full bg-surface-variant overflow-hidden">
-                      <img
-                        src={product.image_url || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-sm left-sm bg-surface-container-lowest/90 backdrop-blur-sm px-sm py-unit rounded flex items-center gap-unit shadow-xs">
-                        <span className="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
-                        <span className="text-label-sm font-label-sm text-on-surface">In Stock ({product.stock || 50})</span>
-                      </div>
-                    </div>
-                    <div className="p-md">
-                      <h3 className="text-headline-md font-headline-md font-bold text-on-surface mb-unit line-clamp-1">
-                        {product.name}
-                      </h3>
-                      <p className="text-body-sm text-secondary mb-md">{product.unit || '1 unit'}</p>
-                      <div className="text-headline-md font-headline-md font-bold text-primary mb-md">
-                        ₹ {product.price}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-md border-t border-surface-variant flex items-center justify-between gap-sm bg-surface-container-lowest">
-                    {/* Stepper */}
-                    <div className="flex items-center gap-xs bg-surface-container rounded-lg px-sm py-xs">
-                      <button
-                        onClick={() => addToCart(product, -1)}
-                        className="text-on-surface-variant hover:text-primary transition-colors p-unit disabled:opacity-30"
-                        disabled={currentQty <= 0}
-                      >
-                        <span className="material-symbols-outlined text-[18px]">remove</span>
-                      </button>
-                      <span className="text-body-md font-bold text-on-surface w-6 text-center">
-                        {currentQty}
-                      </span>
-                      <button
-                        onClick={() => addToCart(product, 1)}
-                        className="text-on-surface-variant hover:text-primary transition-colors p-unit"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">add</span>
-                      </button>
-                    </div>
-
-                    {/* Action Button */}
-                    <button
-                      onClick={() => addToCart(product, 1)}
-                      className="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg flex items-center gap-xs hover:bg-primary-container transition-colors h-11 shrink-0"
-                    >
-                      <span>Add</span>
-                      <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-
-            {filteredProducts.length === 0 && (
-              <div className="col-span-full bg-surface-container-lowest rounded-xl p-xl border border-surface-container text-center py-xl">
-                <span className="material-symbols-outlined text-outline text-5xl mb-sm">inventory_2</span>
-                <h3 className="font-headline-md text-headline-md text-on-surface mb-xs">No products in this category</h3>
-                <p className="font-body-md text-body-md text-secondary">Select another category or view all products.</p>
+          {filteredProducts.length === 0 ? (
+            <div className="bg-surface-container-lowest border border-dashed border-outline-variant rounded-2xl p-xl text-center space-y-md">
+              <span className="material-symbols-outlined text-4xl text-secondary">inventory_2</span>
+              <div>
+                <h3 className="font-headline-sm font-bold text-on-surface">No products listed for this shop yet</h3>
+                <p className="font-body-sm text-secondary text-xs mt-xs">
+                  This shop merchant can add products via their Store Management console.
+                </p>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Cart Drawer / Summary Sidebar */}
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg shadow-[0px_4px_12px_rgba(26,26,26,0.05)] h-fit sticky top-24 space-y-md">
-          <div className="flex justify-between items-center pb-md border-b border-surface-variant">
-            <div className="flex items-center gap-xs">
-              <span className="material-symbols-outlined text-primary">shopping_bag</span>
-              <h2 className="font-headline-md text-headline-md font-bold text-on-surface">Your Cart</h2>
-            </div>
-            <span className="bg-primary-container text-on-primary-container px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">
-              {cartItemsCount} items
-            </span>
-          </div>
-
-          {cart.length === 0 ? (
-            <div className="py-xl text-center text-secondary space-y-xs">
-              <span className="material-symbols-outlined text-4xl text-outline">remove_shopping_cart</span>
-              <p className="font-body-md text-body-md">Your cart is currently empty.</p>
-              <p className="font-body-sm text-body-sm">Add products from the list above to get started.</p>
+              <button
+                onClick={handleSeedShopProducts}
+                className="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-xl font-bold hover:bg-primary-container transition-colors"
+              >
+                ➕ Populate Sample Catalog for {merchant?.name}
+              </button>
             </div>
           ) : (
-            <>
-              {/* Item List */}
-              <div className="space-y-sm max-h-60 overflow-y-auto pr-xs">
-                {cart.map(({ product, qty }) => (
-                  <div key={product.id} className="flex justify-between items-center py-xs border-b border-surface-container">
-                    <div className="flex-1 pr-sm">
-                      <div className="font-label-md text-label-md text-on-surface font-bold line-clamp-1">{product.name}</div>
-                      <div className="font-body-sm text-body-sm text-secondary">₹{product.price} × {qty}</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-md">
+              {filteredProducts.map(product => {
+                const cartItem = cart.find(i => i.product.id === product.id);
+                const currentQty = cartItem ? cartItem.qty : 0;
+
+                return (
+                  <div
+                    key={product.id}
+                    className="bg-surface-container-lowest rounded-2xl shadow-xs border border-outline-variant overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow"
+                  >
+                    <div>
+                      <div className="relative h-44 w-full bg-surface-container overflow-hidden">
+                        <img
+                          src={product.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute top-sm left-sm bg-surface/90 backdrop-blur-xs text-on-surface font-label-sm text-xs px-sm py-unit rounded-full font-bold">
+                          ✓ In Stock ({product.stock || 50})
+                        </span>
+                      </div>
+
+                      <div className="p-md space-y-xs">
+                        <h3 className="font-headline-sm text-base font-bold text-on-surface line-clamp-1">
+                          {product.name}
+                        </h3>
+                        <p className="font-body-sm text-xs text-secondary">
+                          {product.unit || '1 unit'}
+                        </p>
+                        <div className="font-headline-md text-lg font-bold text-primary">
+                          ₹{product.price}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-xs">
-                      <span className="font-label-md text-label-md font-bold text-primary">₹{product.price * qty}</span>
+
+                    <div className="p-md pt-0 flex items-center justify-between gap-xs">
+                      {currentQty > 0 ? (
+                        <div className="flex items-center gap-xs bg-surface-container border border-outline-variant rounded-xl p-xs">
+                          <button
+                            onClick={() => updateCartQty(product.id, -1)}
+                            className="w-8 h-8 rounded-lg bg-surface hover:bg-surface-container-high flex items-center justify-center font-bold text-secondary"
+                          >
+                            -
+                          </button>
+                          <span className="font-bold text-sm px-xs">{currentQty}</span>
+                          <button
+                            onClick={() => updateCartQty(product.id, 1)}
+                            className="w-8 h-8 rounded-lg bg-surface hover:bg-surface-container-high flex items-center justify-center font-bold text-secondary"
+                          >
+                            +
+                          </button>
+                        </div>
+                      ) : (
+                        <div />
+                      )}
+
                       <button
-                        onClick={() => updateCartQty(product.id, 0)}
-                        className="text-outline hover:text-error transition-colors p-xs"
+                        onClick={() => addToCart(product, 1)}
+                        className="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-xl font-bold hover:bg-primary-container transition-colors shadow-xs"
                       >
-                        <span className="material-symbols-outlined text-sm">close</span>
+                        {currentQty > 0 ? 'Add More' : 'Add 🛒'}
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Price Breakdown */}
-              <div className="pt-md border-t border-surface-variant space-y-xs text-body-md">
-                <div className="flex justify-between text-secondary">
-                  <span>Subtotal</span>
-                  <span>₹ {cartSubtotal}</span>
-                </div>
-                <div className="flex justify-between text-secondary">
-                  <span>Delivery Fee (Karmala)</span>
-                  <span>₹ {deliveryFee}</span>
-                </div>
-                <div className="flex justify-between font-headline-md text-headline-md text-on-surface font-bold pt-sm border-t border-surface-variant">
-                  <span>Grand Total</span>
-                  <span className="text-primary">₹ {grandTotal}</span>
-                </div>
-              </div>
-
-              {/* Checkout Action Button */}
-              <button
-                onClick={handleCheckout}
-                disabled={isPlacingOrder}
-                className="w-full bg-primary text-on-primary font-label-md text-label-md py-md rounded-lg flex items-center justify-center gap-sm hover:bg-primary-container transition-colors shadow-md disabled:opacity-50"
-              >
-                {isPlacingOrder ? (
-                  <span>Placing Order...</span>
-                ) : (
-                  <>
-                    <span>Place Order (₹ {grandTotal})</span>
-                    <span className="material-symbols-outlined">arrow_forward</span>
-                  </>
-                )}
-              </button>
-            </>
+                );
+              })}
+            </div>
           )}
+        </div>
+
+        {/* Cart Sidebar */}
+        <div className="space-y-md">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-md sticky top-24">
+            <div className="flex justify-between items-center pb-sm border-b border-outline-variant">
+              <h2 className="font-headline-md font-bold text-on-surface flex items-center gap-xs">
+                <span>🛒</span>
+                <span>Your Order Cart</span>
+              </h2>
+              <span className="bg-primary-container text-on-primary-container text-xs font-bold px-sm py-unit rounded-full">
+                {cartItemsCount} items
+              </span>
+            </div>
+
+            {cart.length === 0 ? (
+              <div className="py-xl text-center space-y-sm">
+                <span className="material-symbols-outlined text-4xl text-secondary">shopping_cart</span>
+                <p className="font-body-sm text-secondary text-xs">
+                  Your cart is empty. Add items from <strong>{merchant?.name}</strong> above to place an order!
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-sm max-h-60 overflow-y-auto pr-xs">
+                  {cart.map(item => (
+                    <div key={item.product.id} className="flex justify-between items-center text-xs">
+                      <div>
+                        <span className="font-bold text-on-surface">{item.product.name}</span>
+                        <div className="text-secondary">{item.qty} × ₹{item.product.price}</div>
+                      </div>
+                      <span className="font-bold text-primary">₹{item.qty * item.product.price}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-sm border-t border-outline-variant space-y-xs text-xs">
+                  <div className="flex justify-between text-secondary">
+                    <span>Items Subtotal</span>
+                    <span>₹{cartSubtotal}</span>
+                  </div>
+                  <div className="flex justify-between text-secondary">
+                    <span>Local Rider Delivery Fee</span>
+                    <span>₹{deliveryFee}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm text-on-surface pt-xs border-t border-surface-variant">
+                    <span>Total Payable</span>
+                    <span className="text-primary text-base">₹{grandTotal}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleCheckout}
+                  disabled={isPlacingOrder}
+                  className="w-full bg-primary text-on-primary font-label-md py-sm rounded-xl font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-xs"
+                >
+                  {isPlacingOrder ? (
+                    <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                  ) : (
+                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                  )}
+                  <span>{isPlacingOrder ? 'Placing Order...' : 'Place Order Now →'}</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

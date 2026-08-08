@@ -13,7 +13,7 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Initial Seed Data for Market Discovery
+// Varied Local Shops Dataset
 const INITIAL_MERCHANTS = [
   {
     id: 'm1111111-1111-1111-1111-111111111111',
@@ -53,25 +53,82 @@ const INITIAL_MERCHANTS = [
     lat: 18.4040,
     lng: 75.1910,
     image_url: 'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'm4444444-4444-4444-4444-444444444444',
+    name: 'Karmala Electricals & Lighting',
+    category: 'Electrical',
+    town: 'Karmala',
+    approved: true,
+    rating: 4.6,
+    eta_range: '20-30 min',
+    distance_km: 1.1,
+    lat: 18.4150,
+    lng: 75.1990,
+    image_url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'm5555555-5555-5555-5555-555555555555',
+    name: 'Patil Organic Farm Fresh',
+    category: 'Fresh',
+    town: 'Karmala',
+    approved: true,
+    rating: 4.9,
+    eta_range: '15-20 min',
+    distance_km: 0.6,
+    lat: 18.4020,
+    lng: 75.1880,
+    image_url: 'https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'm6666666-6666-6666-6666-666666666666',
+    name: 'Aapla Home Needs',
+    category: 'Home',
+    town: 'Karmala',
+    approved: true,
+    rating: 4.7,
+    eta_range: '20-35 min',
+    distance_km: 1.7,
+    lat: 18.4210,
+    lng: 75.2090,
+    image_url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80'
   }
 ];
 
+// Rich Product Dataset for All Merchant Categories
 const INITIAL_PRODUCTS = [
-  // Sharma Grocers
+  // 1. Sharma Grocers (Grocery / Kirana)
   { id: 'p101', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Premium Basmati Rice', price: 180, stock: 45, unit: '1 kg', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
   { id: 'p102', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Cold Pressed Mustard Oil', price: 220, stock: 30, unit: '1 Litre', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' },
   { id: 'p103', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Fresh Poha Flakes', price: 40, stock: 100, unit: '500g', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1588879460405-5609fa84742a?auto=format&fit=crop&w=600&q=80' },
   { id: 'p104', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Fresh Onions', price: 35, stock: 80, unit: '1 kg', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=600&q=80' },
   { id: 'p105', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Raw Peanuts', price: 60, stock: 50, unit: '250g', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=600&q=80' },
   
-  // VSC Kanedi Hardware Shop
+  // 2. VSC Kanedi Hardware Shop (Hardware)
   { id: 'p201', merchant_id: 'm2222222-2222-2222-2222-222222222222', name: 'Heavy-Duty Steel Hammer', price: 350, stock: 15, unit: '1 pc', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80' },
   { id: 'p202', merchant_id: 'm2222222-2222-2222-2222-222222222222', name: 'Galvanized Nails (1-inch)', price: 120, stock: 50, unit: '500g box', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?auto=format&fit=crop&w=600&q=80' },
   { id: 'p203', merchant_id: 'm2222222-2222-2222-2222-222222222222', name: 'PVC Plumbing Pipe (3m)', price: 240, stock: 20, unit: '1 pipe', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p204', merchant_id: 'm2222222-2222-2222-2222-222222222222', name: 'Waterproof Sealant Tape', price: 90, stock: 40, unit: '1 roll', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=600&q=80' },
 
-  // Apollo Pharmacy
+  // 3. Apollo Pharmacy (Pharmacy)
   { id: 'p301', merchant_id: 'm3333333-3333-3333-3333-333333333333', name: 'Paracetamol 650mg Tablets', price: 45, stock: 100, unit: 'Strip of 15', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80' },
-  { id: 'p302', merchant_id: 'm3333333-3333-3333-3333-333333333333', name: 'Waterproof Bandages', price: 60, stock: 75, unit: 'Pack of 20', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=600&q=80' }
+  { id: 'p302', merchant_id: 'm3333333-3333-3333-3333-333333333333', name: 'Waterproof Bandages', price: 60, stock: 75, unit: 'Pack of 20', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p303', merchant_id: 'm3333333-3333-3333-3333-333333333333', name: 'ORS Rehydration Sachet', price: 30, stock: 150, unit: 'Pack of 5', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p304', merchant_id: 'm3333333-3333-3333-3333-333333333333', name: 'Digital Body Thermometer', price: 250, stock: 25, unit: '1 pc', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=600&q=80' },
+
+  // 4. Karmala Electricals & Lighting (Electrical)
+  { id: 'p401', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Syska LED Bulb 9W', price: 110, stock: 60, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p402', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Heavy Extension Cord 4-Socket', price: 380, stock: 20, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p403', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Anchor Modular Switch 16A', price: 75, stock: 80, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80' },
+
+  // 5. Patil Organic Farm Fresh (Fresh Vegetables & Fruits)
+  { id: 'p501', merchant_id: 'm5555555-5555-5555-5555-555555555555', name: 'Fresh Alphonso Mangoes', price: 450, stock: 30, unit: '1 dozen', category: 'Fresh', image_url: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p502', merchant_id: 'm5555555-5555-5555-5555-555555555555', name: 'Farm Fresh Red Tomatoes', price: 40, stock: 90, unit: '1 kg', category: 'Fresh', image_url: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p503', merchant_id: 'm5555555-5555-5555-5555-555555555555', name: 'Organic Green Spinach Bunch', price: 20, stock: 50, unit: '250g', category: 'Fresh', image_url: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=600&q=80' },
+
+  // 6. Aapla Home Needs (Home)
+  { id: 'p601', merchant_id: 'm6666666-6666-6666-6666-666666666666', name: 'Stainless Steel Water Bottle 1L', price: 320, stock: 25, unit: '1 pc', category: 'Home', image_url: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p602', merchant_id: 'm6666666-6666-6666-6666-666666666666', name: 'Microfiber Cleaning Cloth 4-Pack', price: 150, stock: 40, unit: '1 pack', category: 'Home', image_url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80' }
 ];
 
 const INITIAL_RIDERS = [
@@ -172,7 +229,6 @@ export async function signInUser(email, password) {
     }
   }
 
-  // Fallback offline session
   const mockUser = { id: `user_${Date.now()}`, email };
   const mockProfile = { id: mockUser.id, full_name: email.split('@')[0], role: 'customer' };
   setLocalStore('active_session', { user: mockUser, profile: mockProfile });
@@ -194,7 +250,6 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
       console.warn('Supabase Auth signUp rate limit bypassed:', e);
     }
 
-    // Insert into public.profiles
     const profilePayload = {
       id: userId,
       full_name: fullName,
@@ -203,7 +258,6 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
     };
     await supabase.from('profiles').upsert([profilePayload]);
 
-    // If Merchant, auto-create Merchant shop entry
     if (role === 'merchant') {
       const merchantObj = {
         owner_id: userId,
@@ -220,12 +274,10 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
       const { data: createdMerch, error: mErr } = await supabase.from('merchants').insert([merchantObj]).select().single();
       if (mErr) console.error('Error inserting merchant into Supabase:', mErr);
 
-      // Fallback local store
       const curM = getLocalStore('merchants', INITIAL_MERCHANTS);
       setLocalStore('merchants', [createdMerch || { id: `m_${Date.now()}`, ...merchantObj }, ...curM]);
     }
 
-    // If Rider, auto-create Rider entry
     if (role === 'rider') {
       const riderObj = {
         user_id: userId,
@@ -239,7 +291,6 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
       const { data: createdRider, error: rErr } = await supabase.from('riders').insert([riderObj]).select().single();
       if (rErr) console.error('Error inserting rider into Supabase:', rErr);
 
-      // Fallback local store
       const curR = getLocalStore('riders', INITIAL_RIDERS);
       setLocalStore('riders', [createdRider || { id: `r_${Date.now()}`, ...riderObj }, ...curR]);
     }
@@ -262,7 +313,7 @@ export function getStoredSession() {
   return getLocalStore('active_session', null);
 }
 
-// DATA ACCESS APIS
+// DATA ACCESS APIS WITH MERCHANTS & PRODUCTS FALLBACK
 export async function fetchMerchants() {
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.from('merchants').select('*');
@@ -419,11 +470,9 @@ export async function recordRiderLocation({ order_id, rider_id, latitude, longit
     if (!error && data) return data;
   }
 
-  // Fallback state update
   const key = `location_${order_id}`;
   setLocalStore(key, locationPayload);
 
-  // Update rider position in riders table
   const ridersList = getLocalStore('riders', INITIAL_RIDERS);
   const updatedRiders = ridersList.map(r => r.id === rider_id ? { ...r, lat: latitude, lng: longitude } : r);
   setLocalStore('riders', updatedRiders);
