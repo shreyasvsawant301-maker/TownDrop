@@ -26,7 +26,7 @@ export default function LoginScreen() {
           setLoading(false);
           return;
         }
-        await signUp(email, password, fullName, role);
+        await signUp(email, password, fullName, role, phone);
       } else {
         if (!email.trim() || !password.trim()) {
           setErrorMsg('Please enter your email and password.');
@@ -45,12 +45,14 @@ export default function LoginScreen() {
   return (
     <div className="min-h-screen bg-surface flex flex-col justify-center items-center p-md">
       <div className="w-full max-w-md space-y-md">
-        {/* Brand Header */}
-        <div className="text-center space-y-xs">
-          <h1 className="font-headline-lg text-headline-lg font-bold text-primary">
-            TownDrop
-          </h1>
-          <p className="font-body-md text-secondary">
+        {/* Brand Header with Official Logo */}
+        <div className="text-center space-y-xs flex flex-col items-center">
+          <img
+            src="/towndrop-logo.png"
+            alt="TownDrop - Local Delivery • Reliable Drop"
+            className="h-20 md:h-24 object-contain mb-xs"
+          />
+          <p className="font-body-md text-secondary max-w-sm">
             Hyperlocal Commerce & Delivery Platform for Underserved Towns
           </p>
         </div>

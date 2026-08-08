@@ -30,11 +30,11 @@ export default function Shell() {
   return (
     <div className="bg-surface text-on-surface font-body-md min-h-screen antialiased flex flex-col">
       {/* Top Navigation Bar */}
-      <header className="bg-surface dark:bg-surface-dim shadow-[0px_4px_12px_rgba(26,26,26,0.05)] docked full-width top-0 flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50">
+      <header className="bg-surface dark:bg-surface-dim shadow-[0px_4px_12px_rgba(26,26,26,0.05)] docked full-width top-0 flex justify-between items-center w-full px-container-margin py-xs md:py-sm sticky top-0 z-50">
         {/* Brand Logo & Location */}
         <div className="flex items-center gap-md">
-          <div className="text-headline-md font-headline-md font-bold text-primary">
-            TownDrop
+          <div className="flex items-center gap-xs cursor-pointer" onClick={() => role === 'customer' && setCustomerSubView('browse')}>
+            <img src="/towndrop-logo.png" alt="TownDrop Logo" className="h-10 md:h-12 object-contain" />
           </div>
           <span className="hidden sm:inline-flex items-center gap-xs bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm px-sm py-xs rounded-full border border-outline-variant">
             <span className="material-symbols-outlined text-sm text-primary">location_on</span>
