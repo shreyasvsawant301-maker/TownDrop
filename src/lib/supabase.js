@@ -117,7 +117,7 @@ const INITIAL_PRODUCTS = [
   { id: 'p304', merchant_id: 'm3333333-3333-3333-3333-333333333333', name: 'Digital Body Thermometer', price: 250, stock: 25, unit: '1 pc', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=600&q=80' },
 
   // 4. Karmala Electricals & Lighting (Electrical)
-  { id: 'p401', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Syska LED Bulb 9W', price: 110, stock: 60, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p401', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Syska LED Bulb 9W', price: 110, stock: 60, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1507646227500-4d389b0012be?auto=format&fit=crop&w=600&q=80' },
   { id: 'p402', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Heavy Extension Cord 4-Socket', price: 380, stock: 20, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=600&q=80' },
   { id: 'p403', merchant_id: 'm4444444-4444-4444-4444-444444444444', name: 'Anchor Modular Switch 16A', price: 75, stock: 80, unit: '1 pc', category: 'Electrical', image_url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80' },
 
@@ -697,7 +697,7 @@ export function getProductImage(product, merchant) {
   
   // 1. High priority name-based overrides
   if (name.includes('bulb') || name.includes('led') || name.includes('switch') || name.includes('cord') || name.includes('wire') || name.includes('plug') || name.includes('light')) {
-    return 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80'; // Electrical / LED Bulb
+    return 'https://images.unsplash.com/photo-1507646227500-4d389b0012be?auto=format&fit=crop&w=600&q=80'; // Electrical / LED Bulb
   }
   if (name.includes('drill') || name.includes('hammer') || name.includes('nail') || name.includes('screw') || name.includes('saw') || name.includes('wrench') || name.includes('tool')) {
     return 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80'; // Tool / Hammer
@@ -726,7 +726,7 @@ export function getProductImage(product, merchant) {
     return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'; // Grocery / Rice
   }
   if (cat.includes('electrical') || cat.includes('light')) {
-    return 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80'; // Electrical / LED Bulb
+    return 'https://images.unsplash.com/photo-1507646227500-4d389b0012be?auto=format&fit=crop&w=600&q=80'; // Electrical / LED Bulb
   }
   if (cat.includes('fresh') || cat.includes('fruit') || cat.includes('veg')) {
     return 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80'; // Fresh Fruit
