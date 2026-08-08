@@ -89,12 +89,21 @@ export default function MerchantDashboard() {
     setTimeout(() => setSaveSettingsNotice(false), 4000);
   };
 
-  const PRESET_IMAGES = [
+  const SHOP_PRESETS = [
     { label: 'Kirana / Grocery', url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=600&q=80' },
     { label: 'Hardware', url: 'https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=600&q=80' },
     { label: 'Pharmacy', url: 'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80' },
     { label: 'Electrical', url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80' },
     { label: 'Fresh Vegetables', url: 'https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=600&q=80' }
+  ];
+
+  const PRODUCT_PRESETS = [
+    { label: '🔨 Tool', url: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80' },
+    { label: '💊 Medicine', url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80' },
+    { label: '🌾 Grocery', url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
+    { label: '💡 Electrical', url: 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80' },
+    { label: '🥭 Fresh Fruit', url: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80' },
+    { label: '🧴 Liquid / Bottle', url: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' }
   ];
 
   return (
@@ -330,11 +339,13 @@ export default function MerchantDashboard() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md">
             {merchantProducts.map(prod => (
-              <div key={prod.id} className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs p-md space-y-xs">
-                <img src={prod.image_url || merchant.image_url} alt={prod.name} className="h-36 w-full object-cover rounded-xl" />
-                <h4 className="font-bold text-sm text-on-surface">{prod.name}</h4>
-                <p className="text-xs text-secondary">{prod.unit || '1 unit'} • Stock: {prod.stock}</p>
-                <div className="font-bold text-primary text-base">₹{prod.price}</div>
+              <div key={prod.id} className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs p-md space-y-xs flex flex-col justify-between">
+                <div className="space-y-xs">
+                  <img src={prod.image_url || merchant?.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'} alt={prod.name} className="h-36 w-full object-cover rounded-xl" />
+                  <h4 className="font-bold text-sm text-on-surface line-clamp-1">{prod.name}</h4>
+                  <p className="text-xs text-secondary">{prod.unit || '1 unit'} • Stock: {prod.stock || 50}</p>
+                </div>
+                <div className="font-bold text-primary text-base pt-xs border-t border-outline-variant">₹{prod.price}</div>
               </div>
             ))}
           </div>
@@ -421,7 +432,7 @@ export default function MerchantDashboard() {
               <div className="mt-xs">
                 <span className="text-[11px] text-secondary font-bold block mb-xs">Or Pick Category Preset Banner:</span>
                 <div className="flex gap-xs overflow-x-auto pb-xs">
-                  {PRESET_IMAGES.map((preset) => (
+                  {SHOP_PRESETS.map((preset) => (
                     <button
                       type="button"
                       key={preset.label}
@@ -531,15 +542,27 @@ export default function MerchantDashboard() {
 
               <div>
                 <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
-                  Image URL (Optional)
+                  Product Image URL or Select Preset
                 </label>
                 <input
                   type="url"
                   placeholder="https://images.unsplash.com/..."
                   value={newProduct.image_url}
                   onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
-                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
+                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden mb-xs"
                 />
+                <div className="flex gap-xs overflow-x-auto pb-xs">
+                  {PRODUCT_PRESETS.map((preset) => (
+                    <button
+                      type="button"
+                      key={preset.label}
+                      onClick={() => setNewProduct({ ...newProduct, image_url: preset.url })}
+                      className="px-xs py-unit bg-surface-container text-xs rounded-md text-secondary hover:bg-primary-container hover:text-on-primary-container font-bold shrink-0"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="flex gap-sm justify-end pt-xs">

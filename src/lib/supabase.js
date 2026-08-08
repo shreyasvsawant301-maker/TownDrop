@@ -13,7 +13,7 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Varied Local Shops Dataset
+// Full Varied Local Shops Dataset
 const INITIAL_MERCHANTS = [
   {
     id: 'm1111111-1111-1111-1111-111111111111',
@@ -274,7 +274,7 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
       const { data: createdMerch, error: mErr } = await supabase.from('merchants').insert([merchantObj]).select().single();
       if (mErr) console.error('Error inserting merchant into Supabase:', mErr);
 
-      const curM = getLocalStore('merchants', INITIAL_MERCHANTS);
+      const curM = getLocalStore('merchants', []);
       setLocalStore('merchants', [createdMerch || { id: `m_${Date.now()}`, ...merchantObj }, ...curM]);
     }
 
@@ -291,7 +291,7 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
       const { data: createdRider, error: rErr } = await supabase.from('riders').insert([riderObj]).select().single();
       if (rErr) console.error('Error inserting rider into Supabase:', rErr);
 
-      const curR = getLocalStore('riders', INITIAL_RIDERS);
+      const curR = getLocalStore('riders', []);
       setLocalStore('riders', [createdRider || { id: `r_${Date.now()}`, ...riderObj }, ...curR]);
     }
   }
@@ -313,24 +313,42 @@ export function getStoredSession() {
   return getLocalStore('active_session', null);
 }
 
-// DATA ACCESS APIS WITH MERCHANTS & PRODUCTS FALLBACK
+// DATA ACCESS APIS WITH ROBUST MERGING (INITIAL + DB + LOCAL)
 export async function fetchMerchants() {
+  let dbMerchants = [];
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.from('merchants').select('*');
-    if (!error && data?.length) return data;
+    if (!error && data) dbMerchants = data;
   }
-  return getLocalStore('merchants', INITIAL_MERCHANTS);
+  const localMerchants = getLocalStore('merchants', []);
+
+  // Merge INITIAL_MERCHANTS + DB Merchants + Local Storage Merchants without duplicates
+  const map = new Map();
+  INITIAL_MERCHANTS.forEach(m => map.set(m.id, m));
+  dbMerchants.forEach(m => map.set(m.id, m));
+  localMerchants.forEach(m => map.set(m.id, m));
+
+  return Array.from(map.values());
 }
 
 export async function fetchProducts(merchantId = null) {
+  let dbProducts = [];
   if (isSupabaseConfigured) {
     let query = supabase.from('products').select('*');
     if (merchantId) query = query.eq('merchant_id', merchantId);
     const { data, error } = await query;
-    if (!error && data?.length) return data;
+    if (!error && data) dbProducts = data;
   }
-  const products = getLocalStore('products', INITIAL_PRODUCTS);
-  return merchantId ? products.filter(p => p.merchant_id === merchantId) : products;
+  const localProducts = getLocalStore('products', []);
+
+  // Merge INITIAL_PRODUCTS + DB Products + Local Storage Products without duplicates
+  const map = new Map();
+  INITIAL_PRODUCTS.forEach(p => map.set(p.id, p));
+  dbProducts.forEach(p => map.set(p.id, p));
+  localProducts.forEach(p => map.set(p.id, p));
+
+  const allProducts = Array.from(map.values());
+  return merchantId ? allProducts.filter(p => p.merchant_id === merchantId) : allProducts;
 }
 
 export async function updateMerchantSettings(merchantId, settingsPayload) {
@@ -343,26 +361,38 @@ export async function updateMerchantSettings(merchantId, settingsPayload) {
       .single();
     if (!error && data) return data;
   }
-  const merchantsList = getLocalStore('merchants', INITIAL_MERCHANTS);
+  const merchantsList = getLocalStore('merchants', []);
   const updated = merchantsList.map(m => m.id === merchantId ? { ...m, ...settingsPayload } : m);
   setLocalStore('merchants', updated);
   return updated.find(m => m.id === merchantId);
 }
 
 export async function fetchRiders() {
+  let dbRiders = [];
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.from('riders').select('*');
-    if (!error && data?.length) return data;
+    if (!error && data) dbRiders = data;
   }
-  return getLocalStore('riders', INITIAL_RIDERS);
+  const localRiders = getLocalStore('riders', []);
+  const map = new Map();
+  INITIAL_RIDERS.forEach(r => map.set(r.id, r));
+  dbRiders.forEach(r => map.set(r.id, r));
+  localRiders.forEach(r => map.set(r.id, r));
+  return Array.from(map.values());
 }
 
 export async function fetchOrders() {
+  let dbOrders = [];
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-    if (!error && data) return data;
+    if (!error && data) dbOrders = data;
   }
-  return getLocalStore('orders', INITIAL_ORDERS);
+  const localOrders = getLocalStore('orders', []);
+  const map = new Map();
+  INITIAL_ORDERS.forEach(o => map.set(o.id, o));
+  dbOrders.forEach(o => map.set(o.id, o));
+  localOrders.forEach(o => map.set(o.id, o));
+  return Array.from(map.values());
 }
 
 export async function createOrder(newOrderData) {
@@ -524,7 +554,7 @@ export async function addProduct(productData) {
     if (!error && data) return data;
   }
 
-  const currentProds = getLocalStore('products', INITIAL_PRODUCTS);
+  const currentProds = getLocalStore('products', []);
   const updated = [newProd, ...currentProds];
   setLocalStore('products', updated);
   return newProd;
