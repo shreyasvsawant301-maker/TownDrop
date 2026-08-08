@@ -2,222 +2,192 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function LoginScreen() {
-  const { login, signUp, demoLogin } = useApp();
+  const { login, signUp } = useApp();
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
 
-  const [isRegister, setIsRegister] = useState(false);
+  // Form State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [selectedRole, setSelectedRole] = useState('customer'); // 'customer' | 'merchant' | 'rider'
-  const [errorMsg, setErrorMsg] = useState('');
+  const [role, setRole] = useState('customer');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
+    setErrorMsg(null);
     setLoading(true);
 
     try {
-      if (isRegister) {
-        if (!fullName) {
-          setErrorMsg('Please enter your full name');
+      if (isSignUpMode) {
+        if (!fullName.trim() || !email.trim() || !password.trim()) {
+          setErrorMsg('Please fill in all required fields.');
           setLoading(false);
           return;
         }
-        await signUp(email, password, fullName, selectedRole);
+        await signUp(email, password, fullName, role);
       } else {
+        if (!email.trim() || !password.trim()) {
+          setErrorMsg('Please enter your email and password.');
+          setLoading(false);
+          return;
+        }
         await login(email, password);
       }
-    } catch (e) {
-      setErrorMsg(e.message || 'Authentication failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDemoClick = async (role) => {
-    setLoading(true);
-    try {
-      await demoLogin(role);
-    } catch (e) {
-      console.error('Demo login error', e);
+    } catch (err) {
+      setErrorMsg(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center p-container-margin py-xl">
-      <div className="max-w-md w-full space-y-lg">
-        {/* Brand Logo & Tagline */}
+    <div className="min-h-screen bg-surface flex flex-col justify-center items-center p-md">
+      <div className="w-full max-w-md space-y-md">
+        {/* Brand Header */}
         <div className="text-center space-y-xs">
-          <h1 className="font-headline-xl text-headline-xl font-bold text-primary">LocalConnect</h1>
-          <p className="font-body-md text-body-md text-secondary font-medium">Your town. Your shops. Delivered.</p>
+          <h1 className="font-headline-lg text-headline-lg font-bold text-primary">
+            TownDrop
+          </h1>
+          <p className="font-body-md text-secondary">
+            Hyperlocal Commerce & Delivery Platform for Underserved Towns
+          </p>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-surface-container-lowest rounded-xl p-lg md:p-xl shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-outline-variant space-y-lg">
-          <div className="text-center pb-sm border-b border-surface-variant">
-            <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
-              {isRegister ? 'Create LocalConnect Account' : 'Sign in to LocalConnect'}
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-md space-y-md">
+          <div className="text-center">
+            <h2 className="font-headline-md font-bold text-on-surface">
+              {isSignUpMode ? 'Create TownDrop Account' : 'Sign in to TownDrop'}
             </h2>
-            <p className="font-body-sm text-secondary mt-xs">
-              {isRegister ? 'Select your role to register' : 'Enter your credentials to access your dashboard'}
+            <p className="font-body-sm text-xs text-secondary mt-xs">
+              {isSignUpMode
+                ? 'Register as a Customer, Merchant, or Rider'
+                : 'Enter your credentials to access your dashboard'}
             </p>
           </div>
 
           {errorMsg && (
-            <div className="bg-error-container text-on-error-container p-sm rounded-lg font-body-sm text-sm">
+            <div className="bg-error-container text-on-error-container p-sm rounded-xl text-xs font-medium animate-fadeIn">
               {errorMsg}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-md">
-            {isRegister && (
+            {isSignUpMode && (
+              <div>
+                <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Ramesh Patil"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden focus:ring-2 focus:ring-primary"
+                />
+              </div>
+            )}
+
+            <div>
+              <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                Email Address
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            {isSignUpMode && (
               <>
                 <div>
-                  <label className="block font-label-sm text-label-sm text-secondary mb-xs font-bold">Full Name</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full p-sm bg-surface-container border border-outline-variant rounded-lg font-body-md focus:outline-none focus:border-primary"
-                    placeholder="e.g. Shreyas"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                  />
+                  <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                    Select Account Role
+                  </label>
+                  <div className="grid grid-cols-3 gap-xs">
+                    {[
+                      { key: 'customer', label: '🛍️ Customer' },
+                      { key: 'merchant', label: '🏪 Merchant' },
+                      { key: 'rider', label: '🛵 Rider' }
+                    ].map((r) => (
+                      <button
+                        type="button"
+                        key={r.key}
+                        onClick={() => setRole(r.key)}
+                        className={`p-xs rounded-xl text-xs font-bold transition-all border ${
+                          role === r.key
+                            ? 'bg-primary text-on-primary border-primary shadow-xs'
+                            : 'bg-surface text-secondary border-outline-variant hover:bg-surface-container-high'
+                        }`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Role Selection during signup */}
                 <div>
-                  <label className="block font-label-sm text-label-sm text-secondary mb-xs font-bold">I am a...</label>
-                  <div className="grid grid-cols-3 gap-xs">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedRole('customer')}
-                      className={`p-sm rounded-lg border text-center transition-all flex flex-col items-center gap-xs ${
-                        selectedRole === 'customer'
-                          ? 'border-primary bg-primary-container text-on-primary-container font-bold'
-                          : 'border-outline-variant bg-surface-container text-secondary hover:bg-surface-container-high'
-                      }`}
-                    >
-                      <span className="text-xl">🛍️</span>
-                      <span className="font-label-sm text-label-sm">Customer</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setSelectedRole('merchant')}
-                      className={`p-sm rounded-lg border text-center transition-all flex flex-col items-center gap-xs ${
-                        selectedRole === 'merchant'
-                          ? 'border-primary bg-primary-container text-on-primary-container font-bold'
-                          : 'border-outline-variant bg-surface-container text-secondary hover:bg-surface-container-high'
-                      }`}
-                    >
-                      <span className="text-xl">🏪</span>
-                      <span className="font-label-sm text-label-sm">Merchant</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setSelectedRole('rider')}
-                      className={`p-sm rounded-lg border text-center transition-all flex flex-col items-center gap-xs ${
-                        selectedRole === 'rider'
-                          ? 'border-primary bg-primary-container text-on-primary-container font-bold'
-                          : 'border-outline-variant bg-surface-container text-secondary hover:bg-surface-container-high'
-                      }`}
-                    >
-                      <span className="text-xl">🛵</span>
-                      <span className="font-label-sm text-label-sm">Rider</span>
-                    </button>
-                  </div>
+                  <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
+                    Phone Number (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden focus:ring-2 focus:ring-primary"
+                  />
                 </div>
               </>
             )}
 
-            <div>
-              <label className="block font-label-sm text-label-sm text-secondary mb-xs font-bold">Email Address</label>
-              <input
-                type="email"
-                required
-                className="w-full p-sm bg-surface-container border border-outline-variant rounded-lg font-body-md focus:outline-none focus:border-primary"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="block font-label-sm text-label-sm text-secondary mb-xs font-bold">Password</label>
-              <input
-                type="password"
-                required
-                className="w-full p-sm bg-surface-container border border-outline-variant rounded-lg font-body-md focus:outline-none focus:border-primary"
-                placeholder="•••••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-on-primary font-label-md text-label-md py-md rounded-lg hover:bg-primary-container transition-colors shadow-sm font-bold flex items-center justify-center gap-xs"
+              className="w-full bg-primary text-on-primary font-label-md py-sm rounded-xl font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-xs"
             >
-              <span>{isRegister ? 'Create Account →' : 'Sign In →'}</span>
+              {loading ? (
+                <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+              ) : null}
+              <span>{isSignUpMode ? 'Complete Registration →' : 'Sign In →'}</span>
             </button>
           </form>
 
-          {/* Toggle Register vs Login */}
-          <div className="text-center pt-xs">
+          {/* Toggle between Sign In and Sign Up */}
+          <div className="text-center pt-xs border-t border-surface-variant">
             <button
-              onClick={() => { setIsRegister(!isRegister); setErrorMsg(''); }}
-              className="font-body-sm text-body-sm text-primary font-semibold hover:underline"
+              type="button"
+              onClick={() => {
+                setIsSignUpMode(!isSignUpMode);
+                setErrorMsg(null);
+              }}
+              className="text-xs font-bold text-primary hover:underline"
             >
-              {isRegister ? 'Already have an account? Sign In' : "Don't have an account? Create account"}
+              {isSignUpMode
+                ? 'Already have an account? Sign in'
+                : "Don't have an account? Create account"}
             </button>
-          </div>
-
-          {/* HACKATHON INSTANT DEMO ACCESS AREA */}
-          <div className="pt-md border-t border-surface-variant space-y-sm">
-            <div className="flex items-center justify-between">
-              <span className="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">
-                ⚡ Instant Hackathon Demo Access
-              </span>
-              <span className="bg-primary-fixed text-on-primary-fixed-variant px-xs py-unit rounded text-[10px] font-bold">
-                1-Click Login
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-sm">
-              <button
-                type="button"
-                onClick={() => handleDemoClick('customer')}
-                className="p-sm bg-surface-container hover:bg-primary-container hover:text-on-primary-container rounded-lg border border-outline-variant font-label-md text-label-md transition-colors flex items-center justify-center gap-xs font-semibold"
-              >
-                <span>🛍️</span> Customer
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoClick('merchant')}
-                className="p-sm bg-surface-container hover:bg-primary-container hover:text-on-primary-container rounded-lg border border-outline-variant font-label-md text-label-md transition-colors flex items-center justify-center gap-xs font-semibold"
-              >
-                <span>🏪</span> Merchant
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoClick('rider')}
-                className="p-sm bg-surface-container hover:bg-primary-container hover:text-on-primary-container rounded-lg border border-outline-variant font-label-md text-label-md transition-colors flex items-center justify-center gap-xs font-semibold"
-              >
-                <span>🛵</span> Rider
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoClick('admin')}
-                className="p-sm bg-surface-container hover:bg-tertiary-container hover:text-on-tertiary-container rounded-lg border border-outline-variant font-label-md text-label-md transition-colors flex items-center justify-center gap-xs font-semibold"
-              >
-                <span>⚡</span> Admin
-              </button>
-            </div>
           </div>
         </div>
       </div>

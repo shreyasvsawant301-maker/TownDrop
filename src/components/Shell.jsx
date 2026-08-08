@@ -9,9 +9,8 @@ import RiderDashboard from './RiderDashboard';
 import AdminDashboard from './AdminDashboard';
 
 export default function Shell() {
-  const { role, profile, logout, isSupabaseConfigured, demoLogin } = useApp();
+  const { role, profile, logout, isSupabaseConfigured } = useApp();
   const [customerSubView, setCustomerSubView] = useState('browse'); // 'browse' | 'shop' | 'tracking'
-  const [showDevPanel, setShowDevPanel] = useState(false);
 
   // If not authenticated, render Login Screen
   if (!role || !profile) {
@@ -30,12 +29,12 @@ export default function Shell() {
 
   return (
     <div className="bg-surface text-on-surface font-body-md min-h-screen antialiased flex flex-col">
-      {/* Top Navigation Bar (Authenticated State) */}
+      {/* Top Navigation Bar */}
       <header className="bg-surface dark:bg-surface-dim shadow-[0px_4px_12px_rgba(26,26,26,0.05)] docked full-width top-0 flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50">
         {/* Brand Logo & Location */}
         <div className="flex items-center gap-md">
           <div className="text-headline-md font-headline-md font-bold text-primary">
-            LocalConnect
+            TownDrop
           </div>
           <span className="hidden sm:inline-flex items-center gap-xs bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm px-sm py-xs rounded-full border border-outline-variant">
             <span className="material-symbols-outlined text-sm text-primary">location_on</span>
@@ -145,7 +144,7 @@ export default function Shell() {
             )}
           </nav>
 
-          {/* Database connection badge */}
+          {/* Database Connection Badge */}
           <div className="mt-auto p-sm bg-surface-container-low rounded-lg text-label-sm text-secondary space-y-unit">
             <div className="font-bold text-on-surface">Data Connection</div>
             <div>Mode: {isSupabaseConfigured ? '🟢 Live Supabase DB' : '🟡 Local Realtime'}</div>
@@ -181,28 +180,6 @@ export default function Shell() {
             {role === 'admin' && <AdminDashboard />}
           </div>
         </main>
-      </div>
-
-      {/* DEV / DEMO FOOTER PANEL (For quick role switching during presentation) */}
-      <div className="bg-surface-container-highest border-t border-outline-variant py-xs px-container-margin flex justify-between items-center text-label-sm text-secondary">
-        <div className="flex items-center gap-xs">
-          <span className="font-bold text-on-surface">Demo Control:</span>
-          <span>Switch Session Role:</span>
-        </div>
-        <div className="flex gap-xs">
-          <button onClick={() => demoLogin('customer')} className={`px-sm py-unit rounded text-xs ${role === 'customer' ? 'bg-primary text-on-primary font-bold' : 'bg-surface-container hover:bg-surface-container-high'}`}>
-            🛍️ Customer
-          </button>
-          <button onClick={() => demoLogin('merchant')} className={`px-sm py-unit rounded text-xs ${role === 'merchant' ? 'bg-primary text-on-primary font-bold' : 'bg-surface-container hover:bg-surface-container-high'}`}>
-            🏪 Merchant
-          </button>
-          <button onClick={() => demoLogin('rider')} className={`px-sm py-unit rounded text-xs ${role === 'rider' ? 'bg-primary text-on-primary font-bold' : 'bg-surface-container hover:bg-surface-container-high'}`}>
-            🛵 Rider
-          </button>
-          <button onClick={() => demoLogin('admin')} className={`px-sm py-unit rounded text-xs ${role === 'admin' ? 'bg-primary text-on-primary font-bold' : 'bg-surface-container hover:bg-surface-container-high'}`}>
-            ⚡ Admin
-          </button>
-        </div>
       </div>
     </div>
   );
