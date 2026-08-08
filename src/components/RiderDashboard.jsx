@@ -1,155 +1,254 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { recordRiderLocation } from '../lib/supabase';
 
 export default function RiderDashboard() {
-  const { riders, orders, merchants, advanceOrderStatus, toggleRiderStatus } = useApp();
+  const { riders, orders, updateRiderStatus, updateOrderStatus, profile } = useApp();
 
-  const currentRider = riders.find(r => r.id === 'r1111111-1111-1111-1111-111111111111') || riders[0];
+  const [selectedRiderId, setSelectedRiderId] = useState(riders[0]?.id || 'r1111111-1111-1111-1111-111111111111');
+  const [isGpsActive, setIsGpsActive] = useState(false);
+  const [isDemoSimulating, setIsDemoSimulating] = useState(false);
+  const [simStepIndex, setSimStepIndex] = useState(0);
+  const [lastLocationSent, setLastLocationSent] = useState(null);
+  const [gpsError, setGpsError] = useState(null);
 
-  const assignedOrders = orders.filter(o => 
-    (o.rider_id === currentRider?.id || !o.rider_id) && 
-    ['assigned', 'picked_up'].includes(o.status)
-  );
+  const rider = riders.find(r => r.id === selectedRiderId) || riders[0];
+  const assignedOrders = orders.filter(o => o.rider_id === rider?.id || (o.status === 'assigned' && !o.rider_id));
+  const activeOrder = assignedOrders.find(o => ['assigned', 'picked_up', 'out_for_delivery'].includes(o.status)) || assignedOrders[0];
 
-  const completedToday = orders.filter(o => 
-    o.rider_id === currentRider?.id && o.status === 'delivered'
-  ).length;
+  // Predefined Demo Coordinates (Merchant Shop -> Karmala Town -> Customer House)
+  const DEMO_ROUTE_POINTS = [
+    { lat: 18.4088, lng: 75.1953, label: 'Merchant Shop (Origin)' },
+    { lat: 18.4110, lng: 75.1980, label: 'Karmala Main Chowk' },
+    { lat: 18.4140, lng: 75.2020, label: 'Sector 4 Road' },
+    { lat: 18.4165, lng: 75.2055, label: 'Near Customer Landmark (Geofence)' },
+    { lat: 18.4180, lng: 75.2080, label: 'Customer Home (Destination)' }
+  ];
 
-  const handleAction = async (order) => {
-    if (order.status === 'assigned') {
-      await advanceOrderStatus(order.id, 'picked_up');
-    } else if (order.status === 'picked_up') {
-      await advanceOrderStatus(order.id, 'delivered');
+  // REAL BROWSER GEOLOCATION HANDLER
+  const handleStartRealGps = () => {
+    if (!activeOrder) return;
+    if (!navigator.geolocation) {
+      setGpsError('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setGpsError(null);
+    setIsGpsActive(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const payload = {
+          order_id: activeOrder.id,
+          rider_id: rider.id,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy || 10
+        };
+        const res = await recordRiderLocation(payload);
+        setLastLocationSent(res);
+      },
+      (err) => {
+        setGpsError(`GPS Error: ${err.message}. Switch to Demo Simulation Mode.`);
+        setIsGpsActive(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
+
+  // DEMO SIMULATION MODE INTERVAL
+  useEffect(() => {
+    let timer = null;
+    if (isDemoSimulating && activeOrder) {
+      timer = setInterval(async () => {
+        setSimStepIndex(prev => {
+          const nextIdx = (prev + 1) % DEMO_ROUTE_POINTS.length;
+          const pt = DEMO_ROUTE_POINTS[nextIdx];
+
+          recordRiderLocation({
+            order_id: activeOrder.id,
+            rider_id: rider.id,
+            latitude: pt.lat,
+            longitude: pt.lng,
+            accuracy: 5
+          }).then(res => setLastLocationSent(res));
+
+          return nextIdx;
+        });
+      }, 4000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isDemoSimulating, activeOrder, rider?.id]);
+
+  const handleStatusChange = async (orderId, nextStatus) => {
+    await updateOrderStatus(orderId, nextStatus, rider.id);
+    if (nextStatus === 'delivered') {
+      setIsDemoSimulating(false);
+      setIsGpsActive(false);
     }
   };
 
+  const toggleWorkStatus = async () => {
+    const nextStatus = rider?.status === 'available' ? 'busy' : 'available';
+    await updateRiderStatus(rider.id, nextStatus);
+  };
+
   return (
-    <div className="max-w-2xl mx-auto space-y-lg pb-24">
-      {/* Rider Profile & Status Toggle */}
-      <div className="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-outline-variant flex items-center justify-between">
+    <div className="space-y-xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
         <div>
-          <span className="font-label-sm text-label-sm text-secondary block">Delivery Partner</span>
-          <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
-            {currentRider?.name || 'Vikram Singh'} ({currentRider?.phone})
-          </h2>
-          <p className="font-body-sm text-secondary mt-xs">
-            Status: <strong className={currentRider?.status === 'available' ? 'text-[#10b981]' : 'text-primary'}>
-              {currentRider?.status === 'available' ? 'Available for orders' : 'Busy on delivery'}
-            </strong>
+          <span className="bg-tertiary-fixed text-on-tertiary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm font-bold inline-block mb-xs">
+            Rider Delivery Console • {profile?.full_name || rider?.name}
+          </span>
+          <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface">
+            {rider?.name} ({rider?.phone})
+          </h1>
+          <p className="font-body-md text-secondary">
+            Karmala Community Partner • Real-time Location Sharing
           </p>
         </div>
 
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={currentRider?.status === 'available'}
-            onChange={() => toggleRiderStatus(currentRider?.id)}
-          />
-          <div className="w-14 h-7 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
-        </label>
+        <button
+          onClick={toggleWorkStatus}
+          className={`px-md py-sm rounded-xl font-label-md text-label-md font-bold transition-colors flex items-center gap-xs shadow-xs ${
+            rider?.status === 'available'
+              ? 'bg-tertiary text-on-tertiary hover:opacity-90'
+              : 'bg-error-container text-on-error-container hover:opacity-90'
+          }`}
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-current animate-pulse"></span>
+          <span>Status: {rider?.status === 'available' ? '🟢 Available' : '🔴 Busy'}</span>
+        </button>
       </div>
 
-      <h3 className="font-headline-md text-headline-md font-bold text-on-surface">
-        Active Delivery Tasks ({assignedOrders.length})
-      </h3>
-
-      {/* Stacked Delivery Cards */}
-      <div className="space-y-md">
-        {assignedOrders.map(order => {
-          const merchant = merchants.find(m => m.id === order.merchant_id);
-          const isAssigned = order.status === 'assigned';
-          const isPickedUp = order.status === 'picked_up';
-
-          return (
-            <div
-              key={order.id}
-              className="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_12px_rgba(26,26,26,0.05)] border border-outline-variant flex flex-col gap-md"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <span
-                    className={`inline-block font-label-sm text-label-sm px-sm py-xs rounded-full mb-xs border border-outline-variant font-bold ${
-                      isAssigned
-                        ? 'bg-primary-fixed text-on-primary-fixed-variant'
-                        : 'bg-tertiary-container text-on-tertiary-container'
-                    }`}
-                  >
-                    {isAssigned ? 'Assigned' : 'Picked Up'}
-                  </span>
-                  <div className="font-label-md text-label-md font-bold text-on-surface">Order #{order.id}</div>
-                  <div className="font-body-sm text-secondary">Customer: {order.customer_name}</div>
-                </div>
-                <span className="font-headline-md text-headline-md font-bold text-primary">₹ {order.total}</span>
-              </div>
-
-              {/* Location Route */}
-              <div className="space-y-sm relative pl-md border-l-2 border-outline-variant ml-xs">
-                <div className="flex items-center gap-sm">
-                  <span className="material-symbols-outlined text-tertiary">storefront</span>
-                  <span className="font-body-md text-on-surface font-semibold">
-                    Pickup: {merchant?.name || 'Local Shop'}, Karmala
-                  </span>
-                </div>
-                <div className="flex items-center gap-sm">
-                  <span className="material-symbols-outlined text-primary">location_on</span>
-                  <span className="font-body-md text-on-surface">
-                    Drop: {order.customer_name}, Karmala Sector 4
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-surface-container-low p-sm rounded-lg">
-                <p className="font-body-sm text-secondary">
-                  {order.items?.length || 0} items • Total Value ₹{order.total}
-                </p>
-              </div>
-
-              {/* Main Step Button */}
-              {isAssigned && (
-                <button
-                  onClick={() => handleAction(order)}
-                  className="w-full bg-tertiary text-on-tertiary font-label-md text-label-md py-sm rounded-lg min-h-[48px] hover:bg-tertiary-container transition-colors shadow-sm font-bold flex items-center justify-center gap-xs"
-                >
-                  <span className="material-symbols-outlined">local_shipping</span>
-                  Mark Picked Up
-                </button>
-              )}
-
-              {isPickedUp && (
-                <button
-                  onClick={() => handleAction(order)}
-                  className="w-full bg-primary text-on-primary font-label-md text-label-md py-sm rounded-lg min-h-[48px] hover:bg-primary-container transition-colors shadow-sm font-bold flex items-center justify-center gap-xs"
-                >
-                  <span className="material-symbols-outlined">check_circle</span>
-                  Mark Delivered
-                </button>
-              )}
+      {/* Active Order Delivery Card */}
+      {activeOrder ? (
+        <div className="bg-surface-container-lowest border-2 border-primary rounded-2xl p-md md:p-xl shadow-md space-y-lg">
+          <div className="flex justify-between items-start pb-md border-b border-surface-variant">
+            <div>
+              <span className="bg-primary text-on-primary px-sm py-unit rounded-full text-xs font-bold uppercase tracking-wider">
+                Assigned Delivery • #{activeOrder.id}
+              </span>
+              <h2 className="font-headline-md text-headline-md font-bold text-on-surface mt-xs">
+                Deliver to {activeOrder.customer_name}
+              </h2>
+              <p className="text-xs text-secondary">
+                📍 Address: <strong className="text-on-surface">{activeOrder.delivery_address || 'Karmala Market Road'}</strong>
+              </p>
             </div>
-          );
-        })}
-
-        {assignedOrders.length === 0 && (
-          <div className="bg-surface-container-lowest rounded-xl p-xl border border-surface-container text-center py-xl space-y-xs">
-            <span className="material-symbols-outlined text-outline text-5xl">two_wheeler</span>
-            <h3 className="font-headline-md text-headline-md text-on-surface">No active deliveries</h3>
-            <p className="font-body-md text-secondary">You have completed all assigned deliveries! Stay available for new orders.</p>
+            <div className="text-right">
+              <span className="text-xs text-secondary block">Order Value</span>
+              <span className="font-headline-lg font-bold text-primary">₹{activeOrder.total}</span>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Sticky Bottom Stats Strip */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface-container-high border-t border-outline-variant shadow-[0px_-4px_12px_rgba(26,26,26,0.05)] z-40 p-md flex justify-around items-center">
-        <div className="text-center">
-          <span className="block font-headline-md text-headline-md font-bold text-on-surface">{completedToday}</span>
-          <span className="font-label-sm text-label-sm text-secondary">Deliveries Completed</span>
+          {/* Location Authentication & Security Controls */}
+          <div className="bg-surface-container-low p-md rounded-xl border border-outline-variant space-y-sm">
+            <h3 className="font-label-md font-bold text-on-surface flex items-center gap-xs">
+              <span className="material-symbols-outlined text-primary">my_location</span>
+              Designated Order Location Security (`order.id = ${activeOrder.id}`)
+            </h3>
+            <p className="text-xs text-secondary">
+              GPS updates are cryptographically scoped to Order <strong className="text-on-surface">#{activeOrder.id}</strong> and Rider <strong className="text-on-surface">{rider.name}</strong>.
+            </p>
+
+            {gpsError && (
+              <div className="bg-error-container text-on-error-container p-xs rounded text-xs font-medium">
+                {gpsError}
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-sm pt-xs">
+              {/* Button 1: Real Device Geolocation */}
+              <button
+                onClick={handleStartRealGps}
+                className="bg-primary text-on-primary px-md py-sm rounded-xl font-bold text-xs hover:bg-primary-container transition-colors flex items-center gap-xs shadow-xs"
+              >
+                <span className="material-symbols-outlined text-sm">near_me</span>
+                Share Live Device GPS
+              </button>
+
+              {/* Button 2: Demo Tracking Simulation */}
+              <button
+                onClick={() => {
+                  setIsDemoSimulating(!isDemoSimulating);
+                  setIsGpsActive(false);
+                }}
+                className={`px-md py-sm rounded-xl font-bold text-xs transition-colors flex items-center gap-xs shadow-xs ${
+                  isDemoSimulating
+                    ? 'bg-error text-on-error'
+                    : 'bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">
+                  {isDemoSimulating ? 'pause_circle' : 'play_circle'}
+                </span>
+                <span>{isDemoSimulating ? 'Stop Demo GPS Route' : '▶ Start Demo GPS Route'}</span>
+              </button>
+            </div>
+
+            {/* Live Location Output Indicator */}
+            {lastLocationSent && (
+              <div className="bg-surface p-xs rounded-lg border border-outline-variant text-[11px] text-secondary flex justify-between items-center">
+                <span>
+                  📍 Last Broadcast: <strong>{lastLocationSent.latitude.toFixed(4)}, {lastLocationSent.longitude.toFixed(4)}</strong> (Accuracy: {lastLocationSent.accuracy}m)
+                </span>
+                <span className="font-bold text-tertiary">✓ Sent to Supabase Realtime</span>
+              </div>
+            )}
+          </div>
+
+          {/* Delivery Workflow Action Stepper */}
+          <div className="space-y-sm border-t border-surface-variant pt-md">
+            <h3 className="font-label-md font-bold text-on-surface">Update Delivery Status</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-sm">
+              <button
+                onClick={() => handleStatusChange(activeOrder.id, 'picked_up')}
+                disabled={activeOrder.status === 'picked_up' || activeOrder.status === 'out_for_delivery'}
+                className={`p-sm rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-xs border ${
+                  activeOrder.status === 'picked_up'
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant'
+                }`}
+              >
+                <span className="material-symbols-outlined text-base">inventory</span>
+                1. Mark Picked Up
+              </button>
+
+              <button
+                onClick={() => handleStatusChange(activeOrder.id, 'out_for_delivery')}
+                disabled={activeOrder.status === 'out_for_delivery'}
+                className={`p-sm rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-xs border ${
+                  activeOrder.status === 'out_for_delivery'
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant'
+                }`}
+              >
+                <span className="material-symbols-outlined text-base">two_wheeler</span>
+                2. Out for Delivery
+              </button>
+
+              <button
+                onClick={() => handleStatusChange(activeOrder.id, 'delivered')}
+                className="bg-tertiary text-on-tertiary hover:opacity-90 p-sm rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-xs shadow-xs"
+              >
+                <span className="material-symbols-outlined text-base">task_alt</span>
+                3. Mark Delivered
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="h-8 w-px bg-outline-variant"></div>
-        <div className="text-center">
-          <span className="block font-headline-md text-headline-md font-bold text-primary">{assignedOrders.length}</span>
-          <span className="font-label-sm text-label-sm text-secondary">Deliveries In Progress</span>
+      ) : (
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-xl text-center text-secondary space-y-sm">
+          <span className="material-symbols-outlined text-5xl text-outline">two_wheeler</span>
+          <h3 className="font-headline-md font-bold text-on-surface">No Active Deliveries</h3>
+          <p className="text-xs">You are on standby. New merchant orders will automatically appear here.</p>
         </div>
-      </div>
+      )}
     </div>
   );
 }

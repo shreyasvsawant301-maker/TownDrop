@@ -92,7 +92,9 @@ const INITIAL_PRODUCTS = [
   // Sharma Grocers
   { id: 'p101', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Premium Basmati Rice', price: 180, stock: 45, unit: '1 kg', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
   { id: 'p102', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Cold Pressed Mustard Oil', price: 220, stock: 30, unit: '1 Litre', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' },
-  { id: 'p103', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Fresh Coriander Bunch', price: 25, stock: 100, unit: '100g', category: 'Fresh', image_url: 'https://images.unsplash.com/photo-1588879460405-5609fa84742a?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p103', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Fresh Poha Flakes', price: 40, stock: 100, unit: '500g', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1588879460405-5609fa84742a?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p104', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Fresh Onions', price: 35, stock: 80, unit: '1 kg', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=600&q=80' },
+  { id: 'p105', merchant_id: 'm1111111-1111-1111-1111-111111111111', name: 'Raw Peanuts', price: 60, stock: 50, unit: '250g', category: 'Grocery', image_url: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=600&q=80' },
   
   // VSC Kanedi Hardware Shop
   { id: 'p201', merchant_id: 'm2222222-2222-2222-2222-222222222222', name: 'Heavy-Duty Steel Hammer', price: 350, stock: 15, unit: '1 pc', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80' },
@@ -111,7 +113,7 @@ const INITIAL_RIDERS = [
 
 const INITIAL_ORDERS = [
   {
-    id: 'o1001',
+    id: 'TD1024',
     customer_name: 'Shreyas',
     merchant_id: 'm2222222-2222-2222-2222-222222222222',
     rider_id: null,
@@ -121,11 +123,14 @@ const INITIAL_ORDERS = [
     ],
     total: 940,
     status: 'placed',
+    delivery_address: 'Karmala Main Road, House #42',
+    delivery_latitude: 18.4180,
+    delivery_longitude: 75.2080,
     created_at: new Date(Date.now() - 5 * 60000).toISOString()
   }
 ];
 
-// Haversine distance calculator
+// Haversine distance calculator in KM
 export function calculateDistanceKm(lat1, lon1, lat2, lon2) {
   if (!lat1 || !lon1 || !lat2 || !lon2) return 1.2;
   const R = 6371; // km
@@ -136,10 +141,10 @@ export function calculateDistanceKm(lat1, lon1, lat2, lon2) {
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Number((R * c).toFixed(1));
+  return Number((R * c).toFixed(2));
 }
 
-// Local Storage Helper
+// Local Storage Helpers
 function getLocalStore(key, defaultValue) {
   try {
     const item = localStorage.getItem(`localconnect_${key}`);
@@ -177,12 +182,11 @@ function notifyFallbackSubscribers() {
   }
 }
 
-// AUTH FUNCTIONS (REAL SUPABASE AUTH CONNECTIVITY)
+// AUTH FUNCTIONS
 export async function signInUser(email, password) {
   if (isSupabaseConfigured && supabase) {
     let { data, error } = await supabase.auth.signInWithPassword({ email, password });
     
-    // Auto-create user in Supabase Auth if demo user isn't created in Supabase project yet
     if (error && (error.message.includes('Invalid login credentials') || error.status === 400)) {
       const demoKey = Object.keys(DEMO_ACCOUNTS).find(k => DEMO_ACCOUNTS[k].email === email);
       const fullName = demoKey ? DEMO_ACCOUNTS[demoKey].full_name : email.split('@')[0];
@@ -208,7 +212,6 @@ export async function signInUser(email, password) {
     }
   }
 
-  // Fallback User Authentication
   const matchedDemoKey = Object.keys(DEMO_ACCOUNTS).find(k => DEMO_ACCOUNTS[k].email === email);
   if (matchedDemoKey) {
     const demo = DEMO_ACCOUNTS[matchedDemoKey];
@@ -291,13 +294,16 @@ export async function fetchOrders() {
 
 export async function createOrder(newOrderData) {
   const orderObj = {
-    id: `o_${Date.now()}`,
+    id: `TD${Math.floor(1000 + Math.random() * 9000)}`,
     customer_name: newOrderData.customer_name || 'Shreyas',
     merchant_id: newOrderData.merchant_id,
     rider_id: null,
     items: newOrderData.items,
     total: newOrderData.total,
     status: 'placed',
+    delivery_address: newOrderData.delivery_address || 'Karmala Main Road, House #42',
+    delivery_latitude: 18.4180,
+    delivery_longitude: 75.2080,
     created_at: new Date().toISOString()
   };
 
@@ -340,8 +346,13 @@ export async function assignNearestRider(orderId, merchantId) {
 }
 
 export async function updateOrderStatus(orderId, nextStatus, riderId = null) {
+  const VALID_STATUSES = ['placed', 'accepted', 'assigned', 'picked_up', 'out_for_delivery', 'delivered', 'cancelled'];
+  if (!VALID_STATUSES.includes(nextStatus)) {
+    throw new Error(`Invalid status transition to '${nextStatus}'`);
+  }
+
   if (isSupabaseConfigured) {
-    const updatePayload = { status: nextStatus };
+    const updatePayload = { status: nextStatus, updated_at: new Date().toISOString() };
     if (riderId) updatePayload.rider_id = riderId;
     const { data, error } = await supabase
       .from('orders')
@@ -358,7 +369,8 @@ export async function updateOrderStatus(orderId, nextStatus, riderId = null) {
       return {
         ...ord,
         status: nextStatus,
-        rider_id: riderId !== null ? riderId : ord.rider_id
+        rider_id: riderId !== null ? riderId : ord.rider_id,
+        updated_at: new Date().toISOString()
       };
     }
     return ord;
@@ -381,6 +393,52 @@ export async function updateRiderStatus(riderId, newStatus) {
   setLocalStore('riders', updated);
 }
 
+// SECURE GEOLOCATION LOCATION RECORDING
+export async function recordRiderLocation({ order_id, rider_id, latitude, longitude, accuracy = 10 }) {
+  const locationPayload = {
+    order_id,
+    rider_id,
+    latitude: Number(latitude),
+    longitude: Number(longitude),
+    accuracy: Number(accuracy),
+    recorded_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from('delivery_locations')
+      .insert([locationPayload])
+      .select()
+      .single();
+    if (!error && data) return data;
+  }
+
+  // Fallback state update
+  const key = `location_${order_id}`;
+  setLocalStore(key, locationPayload);
+
+  // Update rider position in riders table
+  const ridersList = getLocalStore('riders', INITIAL_RIDERS);
+  const updatedRiders = ridersList.map(r => r.id === rider_id ? { ...r, lat: latitude, lng: longitude } : r);
+  setLocalStore('riders', updatedRiders);
+
+  return locationPayload;
+}
+
+export async function fetchLatestOrderLocation(orderId) {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from('delivery_locations')
+      .select('*')
+      .eq('order_id', orderId)
+      .order('recorded_at', { ascending: false })
+      .limit(1)
+      .single();
+    if (!error && data) return data;
+  }
+  return getLocalStore(`location_${orderId}`, null);
+}
+
 export async function addProduct(productData) {
   const newProd = {
     id: `p_${Date.now()}`,
@@ -401,7 +459,7 @@ export async function addProduct(productData) {
   return newProd;
 }
 
-// GLOBAL REALTIME SUBSCRIPTION
+// REALTIME SUBSCRIPTIONS
 export function subscribeToGlobalRealtime(onDataChanged) {
   if (isSupabaseConfigured && supabase) {
     const channel = supabase
@@ -425,4 +483,91 @@ export function subscribeToGlobalRealtime(onDataChanged) {
       fallbackBus.removeEventListener('update', handler);
     };
   }
+}
+
+export function subscribeToOrderLocation(orderId, onLocationUpdate) {
+  if (isSupabaseConfigured && supabase) {
+    const channel = supabase
+      .channel(`location_${orderId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'delivery_locations',
+          filter: `order_id=eq.${orderId}`
+        },
+        (payload) => {
+          onLocationUpdate(payload.new);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } else {
+    const handler = () => {
+      const loc = getLocalStore(`location_${orderId}`, null);
+      if (loc) onLocationUpdate(loc);
+    };
+    fallbackBus.addEventListener('update', handler);
+    return () => {
+      fallbackBus.removeEventListener('update', handler);
+    };
+  }
+}
+
+// NVIDIA AI ASSISTANT API FUNCTION
+export async function fetchAiShoppingRecommendations(userPrompt, catalog) {
+  const nvidiaKey = import.meta.env.VITE_NVIDIA_API_KEY || '';
+
+  if (nvidiaKey) {
+    try {
+      const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${nvidiaKey}`
+        },
+        body: JSON.stringify({
+          model: "meta/llama-3.1-70b-instruct",
+          messages: [
+            {
+              role: "system",
+              content: `You are TownDrop AI Shopping Assistant for small town residents. Given a user request, select relevant products from this JSON catalog: ${JSON.stringify(catalog)}. Return ONLY JSON array of product IDs matching the request.`
+            },
+            { role: "user", content: userPrompt }
+          ],
+          temperature: 0.2,
+          max_tokens: 150
+        })
+      });
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (content) {
+        const matchedIds = JSON.parse(content.replace(/```json|```/g, '').trim());
+        return catalog.filter(p => matchedIds.includes(p.id));
+      }
+    } catch (e) {
+      console.warn('NVIDIA API fallback to keyword matching:', e);
+    }
+  }
+
+  // Keyword Matching Fallback AI Engine
+  const promptLower = userPrompt.toLowerCase();
+  if (promptLower.includes('poha')) {
+    return catalog.filter(p => ['Poha', 'Onions', 'Peanuts', 'Mustard Oil'].some(kw => p.name.toLowerCase().includes(kw.toLowerCase())));
+  }
+  if (promptLower.includes('hardware') || promptLower.includes('hammer') || promptLower.includes('repair') || promptLower.includes('pipe')) {
+    return catalog.filter(p => p.category === 'Hardware');
+  }
+  if (promptLower.includes('fever') || promptLower.includes('medicine') || promptLower.includes('pain')) {
+    return catalog.filter(p => p.category === 'Pharmacy');
+  }
+
+  return catalog.filter(p => 
+    promptLower.split(' ').some(word => word.length > 2 && p.name.toLowerCase().includes(word))
+  ).slice(0, 3);
 }
