@@ -68,6 +68,17 @@ export default function MerchantDashboard() {
     }, 6000);
   };
 
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProduct(prev => ({ ...prev, image_url: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddProductSubmit = async (e) => {
     e.preventDefault();
     if (!newProduct.name || !newProduct.price) return;
@@ -103,7 +114,7 @@ export default function MerchantDashboard() {
     { label: '🌾 Grocery', url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
     { label: '💡 Electrical', url: 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80' },
     { label: '🥭 Fresh Fruit', url: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80' },
-    { label: '🧴 Liquid / Bottle', url: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' }
+    { label: '🧴 Bottle/Liquid', url: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' }
   ];
 
   return (
@@ -331,7 +342,7 @@ export default function MerchantDashboard() {
             <h3 className="font-headline-sm font-bold text-on-surface">Listed Products Inventory</h3>
             <button
               onClick={() => setShowAddProductModal(true)}
-              className="bg-primary text-on-primary text-xs font-bold px-md py-sm rounded-xl flex items-center gap-xs hover:bg-primary-container"
+              className="bg-primary text-on-primary text-xs font-bold px-md py-sm rounded-xl flex items-center gap-xs hover:bg-primary-container shadow-xs"
             >
               <span className="material-symbols-outlined text-sm">add</span> Add New Product
             </button>
@@ -456,18 +467,85 @@ export default function MerchantDashboard() {
         </div>
       )}
 
-      {/* MODAL: ADD PRODUCT */}
+      {/* MODAL: ADD PRODUCT WITH FILE UPLOAD + LIVE PREVIEW */}
       {showAddProductModal && (
         <div className="fixed inset-0 bg-on-surface/50 backdrop-blur-xs flex items-center justify-center p-md z-50 animate-fadeIn">
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg max-w-md w-full shadow-2xl space-y-md">
-            <div className="flex justify-between items-center">
-              <h3 className="font-headline-md font-bold text-on-surface">➕ Add Product to Inventory</h3>
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg max-w-lg w-full shadow-2xl space-y-md max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-xs border-b border-outline-variant">
+              <div>
+                <h3 className="font-headline-md font-bold text-on-surface">➕ Add New Product</h3>
+                <p className="text-xs text-secondary">Add item with custom image upload or preset icon</p>
+              </div>
               <button onClick={() => setShowAddProductModal(false)} className="text-secondary hover:text-on-surface">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
             <form onSubmit={handleAddProductSubmit} className="space-y-md">
+              {/* Product Photo Upload & Preview Section */}
+              <div className="space-y-xs">
+                <label className="block font-label-sm text-xs text-secondary font-bold">
+                  🖼️ Product Photo / Image
+                </label>
+                
+                {/* Live Preview Box */}
+                {newProduct.image_url ? (
+                  <div className="relative h-36 w-full rounded-xl overflow-hidden border border-primary">
+                    <img src={newProduct.image_url} alt="Product Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setNewProduct({ ...newProduct, image_url: '' })}
+                      className="absolute top-xs right-xs bg-error text-on-error rounded-full p-xs text-xs shadow-xs"
+                      title="Remove image"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-outline-variant rounded-xl p-md text-center space-y-xs bg-surface-container-low hover:bg-surface-container transition-colors">
+                    <span className="material-symbols-outlined text-3xl text-secondary">add_a_photo</span>
+                    <div className="text-xs text-secondary">
+                      <label className="text-primary font-bold cursor-pointer hover:underline">
+                        Upload Image File
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <span> or enter URL below</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Preset Fast Selectors */}
+                <div className="pt-xs">
+                  <span className="text-[11px] text-secondary font-bold block mb-xs">Fast Select Product Preset Photo:</span>
+                  <div className="flex gap-xs overflow-x-auto pb-xs">
+                    {PRODUCT_PRESETS.map((preset) => (
+                      <button
+                        type="button"
+                        key={preset.label}
+                        onClick={() => setNewProduct({ ...newProduct, image_url: preset.url })}
+                        className="px-xs py-unit bg-surface-container text-xs rounded-md text-secondary hover:bg-primary-container hover:text-on-primary-container font-bold shrink-0 border border-outline-variant"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Image URL Text Input */}
+                <input
+                  type="url"
+                  placeholder="Or paste Image URL (https://...)"
+                  value={newProduct.image_url}
+                  onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
+                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl text-xs font-body-md text-on-surface focus:outline-hidden"
+                />
+              </div>
+
               <div>
                 <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
                   Product Name *
@@ -475,7 +553,7 @@ export default function MerchantDashboard() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Paracetamol 650mg / Steel Nails"
+                  placeholder="e.g. Paracetamol 650mg / Steel Hammer"
                   value={newProduct.name}
                   onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                   className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
@@ -499,11 +577,11 @@ export default function MerchantDashboard() {
 
                 <div>
                   <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
-                    Unit Quantity
+                    Unit Size
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. 1 kg / Strip of 10"
+                    placeholder="e.g. 1 kg / 1 pc / Strip of 10"
                     value={newProduct.unit}
                     onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
                     className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden"
@@ -514,7 +592,7 @@ export default function MerchantDashboard() {
               <div className="grid grid-cols-2 gap-md">
                 <div>
                   <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
-                    Initial Stock
+                    Stock Quantity
                   </label>
                   <input
                     type="number"
@@ -526,7 +604,7 @@ export default function MerchantDashboard() {
 
                 <div>
                   <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
-                    Product Category
+                    Category
                   </label>
                   <select
                     value={newProduct.category}
@@ -540,31 +618,6 @@ export default function MerchantDashboard() {
                 </div>
               </div>
 
-              <div>
-                <label className="block font-label-sm text-xs text-secondary mb-xs font-bold">
-                  Product Image URL or Select Preset
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://images.unsplash.com/..."
-                  value={newProduct.image_url}
-                  onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
-                  className="w-full p-sm bg-surface border border-outline-variant rounded-xl font-body-md text-on-surface focus:outline-hidden mb-xs"
-                />
-                <div className="flex gap-xs overflow-x-auto pb-xs">
-                  {PRODUCT_PRESETS.map((preset) => (
-                    <button
-                      type="button"
-                      key={preset.label}
-                      onClick={() => setNewProduct({ ...newProduct, image_url: preset.url })}
-                      className="px-xs py-unit bg-surface-container text-xs rounded-md text-secondary hover:bg-primary-container hover:text-on-primary-container font-bold shrink-0"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="flex gap-sm justify-end pt-xs">
                 <button
                   type="button"
@@ -575,9 +628,9 @@ export default function MerchantDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-md py-sm bg-primary text-on-primary rounded-xl text-xs font-bold hover:bg-primary-container shadow-xs"
+                  className="px-lg py-sm bg-primary text-on-primary rounded-xl text-xs font-bold hover:bg-primary-container shadow-xs"
                 >
-                  Add Product to Shop →
+                  Save Product →
                 </button>
               </div>
             </form>
