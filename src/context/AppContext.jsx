@@ -8,6 +8,7 @@ import {
   updateOrderStatus as dbUpdateOrderStatus,
   updateRiderStatus as dbUpdateRiderStatus,
   addProduct as dbAddProduct,
+  updateMerchantSettings as dbUpdateMerchantSettings,
   assignNearestRider as dbAssignNearestRider,
   subscribeToGlobalRealtime,
   signInUser,
@@ -73,8 +74,8 @@ export function AppProvider({ children }) {
     return res;
   };
 
-  const signUp = async (email, password, fullName, userRole) => {
-    const res = await signUpUser(email, password, fullName, userRole);
+  const signUp = async (email, password, fullName, userRole, phone) => {
+    const res = await signUpUser(email, password, fullName, userRole, phone);
     setSession(res);
     return res;
   };
@@ -170,6 +171,12 @@ export function AppProvider({ children }) {
     return created;
   };
 
+  const updateMerchantInfo = async (merchantId, settingsPayload) => {
+    const updated = await dbUpdateMerchantSettings(merchantId, settingsPayload);
+    await refreshData();
+    return updated;
+  };
+
   const value = {
     session,
     user,
@@ -197,6 +204,7 @@ export function AppProvider({ children }) {
     updateOrderStatus,
     updateRiderStatus,
     addNewProduct,
+    updateMerchantInfo,
     refreshData
   };
 

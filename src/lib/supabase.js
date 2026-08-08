@@ -333,6 +333,22 @@ export async function fetchProducts(merchantId = null) {
   return merchantId ? products.filter(p => p.merchant_id === merchantId) : products;
 }
 
+export async function updateMerchantSettings(merchantId, settingsPayload) {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from('merchants')
+      .update(settingsPayload)
+      .eq('id', merchantId)
+      .select()
+      .single();
+    if (!error && data) return data;
+  }
+  const merchantsList = getLocalStore('merchants', INITIAL_MERCHANTS);
+  const updated = merchantsList.map(m => m.id === merchantId ? { ...m, ...settingsPayload } : m);
+  setLocalStore('merchants', updated);
+  return updated.find(m => m.id === merchantId);
+}
+
 export async function fetchRiders() {
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.from('riders').select('*');
