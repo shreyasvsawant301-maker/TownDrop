@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import logoImg from '../assets/logo.png';
 
 export default function LoginScreen() {
   const { login, signUp } = useApp();
@@ -48,7 +49,7 @@ export default function LoginScreen() {
         {/* Brand Header with Official Logo */}
         <div className="text-center space-y-xs flex flex-col items-center">
           <img
-            src="/towndrop-logo.png"
+            src={logoImg}
             alt="TownDrop - Local Delivery • Reliable Drop"
             className="h-20 md:h-24 object-contain mb-xs"
           />

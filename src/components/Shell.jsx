@@ -7,6 +7,7 @@ import CustomerOrderTracking from './CustomerOrderTracking';
 import MerchantDashboard from './MerchantDashboard';
 import RiderDashboard from './RiderDashboard';
 import AdminDashboard from './AdminDashboard';
+import logoImg from '../assets/logo.png';
 
 export default function Shell() {
   const { role, profile, logout, isSupabaseConfigured } = useApp();
@@ -34,7 +35,7 @@ export default function Shell() {
         {/* Brand Logo & Location */}
         <div className="flex items-center gap-md">
           <div className="flex items-center gap-xs cursor-pointer" onClick={() => role === 'customer' && setCustomerSubView('browse')}>
-            <img src="/towndrop-logo.png" alt="TownDrop Logo" className="h-10 md:h-12 object-contain" />
+            <img src={logoImg} alt="TownDrop Logo" className="h-10 md:h-12 object-contain" />
           </div>
           <span className="hidden sm:inline-flex items-center gap-xs bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm px-sm py-xs rounded-full border border-outline-variant">
             <span className="material-symbols-outlined text-sm text-primary">location_on</span>

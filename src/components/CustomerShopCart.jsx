@@ -47,11 +47,33 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
 
   const handleSeedShopProducts = async () => {
     if (!merchant) return;
-    const sampleItems = [
-      { merchant_id: merchant.id, name: `${merchant.name} Special Combo`, price: 150, stock: 20, unit: '1 pack', category: merchant.category || 'General', image_url: merchant.image_url },
-      { merchant_id: merchant.id, name: 'Local Quality Pack', price: 90, stock: 35, unit: '500g', category: merchant.category || 'General', image_url: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80' },
-      { merchant_id: merchant.id, name: 'Daily Essential Item', price: 45, stock: 50, unit: '1 unit', category: merchant.category || 'General', image_url: 'https://images.unsplash.com/photo-1588879460405-5609fa84742a?auto=format&fit=crop&w=600&q=80' }
-    ];
+    
+    let sampleItems = [];
+    const catLower = (merchant.category || '').toLowerCase();
+    const nameLower = (merchant.name || '').toLowerCase();
+
+    if (catLower.includes('pharmacy') || nameLower.includes('pharmacy') || nameLower.includes('medical') || nameLower.includes('chemist')) {
+      sampleItems = [
+        { merchant_id: merchant.id, name: 'Paracetamol 650mg Tablets', price: 45, stock: 100, unit: 'Strip of 15', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'Waterproof First Aid Bandages', price: 60, stock: 75, unit: 'Pack of 20', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'ORS Electrolyte Packets', price: 30, stock: 150, unit: 'Pack of 5', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'Digital Body Thermometer', price: 250, stock: 25, unit: '1 pc', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'Dettol Antiseptic Liquid 250ml', price: 115, stock: 40, unit: '1 bottle', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'Vitamin C & Zinc Tablets 500mg', price: 140, stock: 60, unit: 'Strip of 15', category: 'Pharmacy', image_url: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=600&q=80' }
+      ];
+    } else if (catLower.includes('hardware') || nameLower.includes('hardware')) {
+      sampleItems = [
+        { merchant_id: merchant.id, name: 'Heavy-Duty Steel Hammer', price: 350, stock: 15, unit: '1 pc', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'Galvanized Nails (1-inch)', price: 120, stock: 50, unit: '500g box', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'PVC Plumbing Pipe (3m)', price: 240, stock: 20, unit: '1 pipe', category: 'Hardware', image_url: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=600&q=80' }
+      ];
+    } else {
+      sampleItems = [
+        { merchant_id: merchant.id, name: `${merchant.name} Fresh Special Item`, price: 120, stock: 30, unit: '1 pack', category: merchant.category || 'General', image_url: merchant.image_url },
+        { merchant_id: merchant.id, name: 'Local Town Quality Item', price: 80, stock: 40, unit: '500g', category: merchant.category || 'General', image_url: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80' },
+        { merchant_id: merchant.id, name: 'Daily Essential Pack', price: 50, stock: 50, unit: '1 unit', category: merchant.category || 'General', image_url: 'https://images.unsplash.com/photo-1588879460405-5609fa84742a?auto=format&fit=crop&w=600&q=80' }
+      ];
+    }
 
     for (const item of sampleItems) {
       await addNewProduct(item);
@@ -105,18 +127,18 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
         <div className="lg:col-span-2 space-y-md">
           {filteredProducts.length === 0 ? (
             <div className="bg-surface-container-lowest border border-dashed border-outline-variant rounded-2xl p-xl text-center space-y-md">
-              <span className="material-symbols-outlined text-4xl text-secondary">inventory_2</span>
+              <span className="material-symbols-outlined text-4xl text-secondary">medical_services</span>
               <div>
                 <h3 className="font-headline-sm font-bold text-on-surface">No products listed for this shop yet</h3>
                 <p className="font-body-sm text-secondary text-xs mt-xs">
-                  This shop merchant can add products via their Store Management console.
+                  Click below to generate a pharmacy product catalog for <strong>{merchant?.name}</strong>.
                 </p>
               </div>
               <button
                 onClick={handleSeedShopProducts}
-                className="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-xl font-bold hover:bg-primary-container transition-colors"
+                className="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-xl font-bold hover:bg-primary-container transition-colors shadow-sm"
               >
-                ➕ Populate Sample Catalog for {merchant?.name}
+                💊 Populate Pharmacy Catalog for {merchant?.name}
               </button>
             </div>
           ) : (
@@ -133,7 +155,7 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
                     <div>
                       <div className="relative h-44 w-full bg-surface-container overflow-hidden">
                         <img
-                          src={product.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'}
+                          src={product.image_url || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />
