@@ -695,27 +695,48 @@ export function getProductImage(product, merchant) {
   const cat = (product?.category || '').toLowerCase();
   const name = (product?.name || '').toLowerCase();
   
-  // Specific checks on product name/category to avoid showing wrong images
-  if (cat.includes('hardware') || cat.includes('tool') || name.includes('drill') || name.includes('hammer') || name.includes('nail')) {
-    return 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80'; // Tool / Hammer
-  }
-  if (cat.includes('pharmacy') || cat.includes('medicine') || cat.includes('medical') || name.includes('tablet') || name.includes('pill') || name.includes('ors')) {
-    return 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'; // Medicine / Pills
-  }
-  if (cat.includes('grocery') || cat.includes('kirana') || cat.includes('rice') || cat.includes('food') || name.includes('oil') || name.includes('poha')) {
-    return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'; // Grocery / Rice
-  }
-  if (cat.includes('electrical') || cat.includes('light') || name.includes('bulb') || name.includes('switch') || name.includes('cord')) {
+  // 1. High priority name-based overrides
+  if (name.includes('bulb') || name.includes('led') || name.includes('switch') || name.includes('cord') || name.includes('wire') || name.includes('plug') || name.includes('light')) {
     return 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80'; // Electrical / LED Bulb
   }
-  if (cat.includes('fresh') || cat.includes('fruit') || cat.includes('veg') || name.includes('mango') || name.includes('tomato') || name.includes('spinach')) {
+  if (name.includes('drill') || name.includes('hammer') || name.includes('nail') || name.includes('screw') || name.includes('saw') || name.includes('wrench') || name.includes('tool')) {
+    return 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80'; // Tool / Hammer
+  }
+  if (name.includes('tablet') || name.includes('pill') || name.includes('capsule') || name.includes('syrup') || name.includes('paracetamol') || name.includes('bandage') || name.includes('ors') || name.includes('medicine')) {
+    return 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'; // Medicine / Pills
+  }
+  if (name.includes('rice') || name.includes('oil') || name.includes('poha') || name.includes('onion') || name.includes('peanut') || name.includes('salt') || name.includes('sugar') || name.includes('atta')) {
+    return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'; // Grocery / Rice
+  }
+  if (name.includes('mango') || name.includes('tomato') || name.includes('spinach') || name.includes('fruit') || name.includes('veg') || name.includes('apple') || name.includes('banana')) {
     return 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80'; // Fresh Fruit
   }
-  if (cat.includes('home') || cat.includes('house') || name.includes('bottle') || name.includes('cloth') || name.includes('clean')) {
+  if (name.includes('bottle') || name.includes('cloth') || name.includes('clean') || name.includes('brush') || name.includes('soap') || name.includes('shampoo')) {
+    return 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80'; // Home Needs
+  }
+  
+  // 2. Category fallback mapping
+  if (cat.includes('hardware') || cat.includes('tool')) {
+    return 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80'; // Tool / Hammer
+  }
+  if (cat.includes('pharmacy') || cat.includes('medicine') || cat.includes('medical') || cat.includes('health')) {
+    return 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'; // Medicine / Pills
+  }
+  if (cat.includes('grocery') || cat.includes('kirana') || cat.includes('rice') || cat.includes('food')) {
+    return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'; // Grocery / Rice
+  }
+  if (cat.includes('electrical') || cat.includes('light')) {
+    return 'https://images.unsplash.com/photo-1550985616-10810253b84d?auto=format&fit=crop&w=600&q=80'; // Electrical / LED Bulb
+  }
+  if (cat.includes('fresh') || cat.includes('fruit') || cat.includes('veg')) {
+    return 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80'; // Fresh Fruit
+  }
+  if (cat.includes('home') || cat.includes('house')) {
     return 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80'; // Home Needs
   }
   
   // Try merchant's cover image as secondary fallback, otherwise general default
   return merchant?.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
 }
+
 
