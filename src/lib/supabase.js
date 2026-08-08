@@ -191,7 +191,7 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
         userObj = data.user;
       }
     } catch (e) {
-      console.warn('Supabase Auth signUp rate limit bypassed for session:', e);
+      console.warn('Supabase Auth signUp rate limit bypassed:', e);
     }
 
     // Insert into public.profiles
@@ -205,29 +205,43 @@ export async function signUpUser(email, password, fullName, role = 'customer', p
 
     // If Merchant, auto-create Merchant shop entry
     if (role === 'merchant') {
-      await supabase.from('merchants').insert([{
+      const merchantObj = {
         owner_id: userId,
-        name: fullName,
-        category: 'General Shop',
+        name: fullName.includes('Shop') || fullName.includes('Store') ? fullName : `${fullName}'s Town Shop`,
+        category: 'General Kirana & Hardware',
         town: 'Karmala',
         approved: true,
         rating: 4.8,
         lat: 18.4088,
         lng: 75.1953,
         image_url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=600&q=80'
-      }]);
+      };
+      
+      const { data: createdMerch, error: mErr } = await supabase.from('merchants').insert([merchantObj]).select().single();
+      if (mErr) console.error('Error inserting merchant into Supabase:', mErr);
+
+      // Fallback local store
+      const curM = getLocalStore('merchants', INITIAL_MERCHANTS);
+      setLocalStore('merchants', [createdMerch || { id: `m_${Date.now()}`, ...merchantObj }, ...curM]);
     }
 
     // If Rider, auto-create Rider entry
     if (role === 'rider') {
-      await supabase.from('riders').insert([{
+      const riderObj = {
         user_id: userId,
         name: fullName,
         phone: phone || '+91 98765 43210',
         status: 'available',
         lat: 18.4060,
         lng: 75.1930
-      }]);
+      };
+
+      const { data: createdRider, error: rErr } = await supabase.from('riders').insert([riderObj]).select().single();
+      if (rErr) console.error('Error inserting rider into Supabase:', rErr);
+
+      // Fallback local store
+      const curR = getLocalStore('riders', INITIAL_RIDERS);
+      setLocalStore('riders', [createdRider || { id: `r_${Date.now()}`, ...riderObj }, ...curR]);
     }
   }
 
