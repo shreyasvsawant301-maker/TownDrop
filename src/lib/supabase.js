@@ -229,8 +229,21 @@ export async function signInUser(email, password) {
     }
   }
 
+  // Fallback / demo mode — detect demo role from email
+  const DEMO_ACCOUNTS = {
+    'customer@localconnect.demo': { full_name: 'Shreyas', role: 'customer' },
+    'merchant@localconnect.demo': { full_name: 'VSC Kanedi Hardware', role: 'merchant' },
+    'rider@localconnect.demo': { full_name: 'Vikram Singh', role: 'rider' },
+    'admin@localconnect.demo': { full_name: 'Admin', role: 'admin' }
+  };
+
+  const demoAccount = DEMO_ACCOUNTS[email.toLowerCase()];
   const mockUser = { id: `user_${Date.now()}`, email };
-  const mockProfile = { id: mockUser.id, full_name: email.split('@')[0], role: 'customer' };
+  const mockProfile = {
+    id: mockUser.id,
+    full_name: demoAccount?.full_name || email.split('@')[0],
+    role: demoAccount?.role || 'customer'
+  };
   setLocalStore('active_session', { user: mockUser, profile: mockProfile });
   return { user: mockUser, profile: mockProfile };
 }

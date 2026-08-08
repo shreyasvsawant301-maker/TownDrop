@@ -14,7 +14,8 @@ import {
   signInUser,
   signUpUser,
   signOutUser,
-  getStoredSession
+  getStoredSession,
+  isSupabaseConfigured
 } from '../lib/supabase';
 
 const AppContext = createContext();
@@ -205,7 +206,8 @@ export function AppProvider({ children }) {
     updateRiderStatus,
     addNewProduct,
     updateMerchantInfo,
-    refreshData
+    refreshData,
+    isSupabaseConfigured
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

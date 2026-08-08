@@ -43,6 +43,27 @@ export default function LoginScreen() {
     }
   };
 
+  const handleDemoLogin = async (demoRole) => {
+    setErrorMsg(null);
+    setLoading(true);
+    try {
+      const demoEmail = `${demoRole}@localconnect.demo`;
+      const demoPassword = 'demo123456';
+      await login(demoEmail, demoPassword);
+    } catch {
+      // Fallback: login still creates a local session via signInUser mock
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const demoRoles = [
+    { key: 'customer', label: 'Customer', icon: 'shopping_bag', desc: 'Browse & order' },
+    { key: 'merchant', label: 'Merchant', icon: 'storefront', desc: 'Manage store' },
+    { key: 'rider', label: 'Rider', icon: 'two_wheeler', desc: 'Deliver orders' },
+    { key: 'admin', label: 'Admin', icon: 'admin_panel_settings', desc: 'Platform ops' }
+  ];
+
   return (
     <div className="min-h-screen bg-surface flex flex-col justify-center items-center p-md">
       <div className="w-full max-w-md space-y-md">
@@ -50,11 +71,11 @@ export default function LoginScreen() {
         <div className="text-center space-y-xs flex flex-col items-center">
           <img
             src={logoImg}
-            alt="TownDrop - Local Delivery • Reliable Drop"
+            alt="LocalConnect"
             className="h-20 md:h-24 object-contain mb-xs"
           />
           <p className="font-body-md text-secondary max-w-sm">
-            Hyperlocal Commerce & Delivery Platform for Underserved Towns
+            Your town. Your shops. Delivered.
           </p>
         </div>
 
@@ -62,7 +83,7 @@ export default function LoginScreen() {
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-md space-y-md">
           <div className="text-center">
             <h2 className="font-headline-md font-bold text-on-surface">
-              {isSignUpMode ? 'Create TownDrop Account' : 'Sign in to TownDrop'}
+              {isSignUpMode ? 'Create Account' : 'Sign in to LocalConnect'}
             </h2>
             <p className="font-body-sm text-xs text-secondary mt-xs">
               {isSignUpMode
@@ -173,7 +194,7 @@ export default function LoginScreen() {
               {loading ? (
                 <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
               ) : null}
-              <span>{isSignUpMode ? 'Complete Registration →' : 'Sign In →'}</span>
+              <span>{isSignUpMode ? 'Create Account →' : 'Sign In →'}</span>
             </button>
           </form>
 
@@ -193,6 +214,38 @@ export default function LoginScreen() {
             </button>
           </div>
         </div>
+
+        {/* Demo Access Section */}
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-md shadow-sm space-y-sm">
+          <div className="text-center">
+            <span className="text-xs font-bold text-secondary uppercase tracking-wider">Demo Access</span>
+            <p className="text-[11px] text-secondary mt-xs">Quick login as any role to explore the platform</p>
+          </div>
+
+          <div className="grid grid-cols-4 gap-xs">
+            {demoRoles.map((dr) => (
+              <button
+                key={dr.key}
+                onClick={() => handleDemoLogin(dr.key)}
+                disabled={loading}
+                className="flex flex-col items-center gap-xs p-sm rounded-xl border border-outline-variant bg-surface hover:bg-primary-fixed hover:border-primary hover:text-on-primary-fixed transition-all group"
+              >
+                <span className="material-symbols-outlined text-xl text-secondary group-hover:text-primary transition-colors">
+                  {dr.icon}
+                </span>
+                <span className="text-xs font-bold text-on-surface group-hover:text-primary transition-colors">
+                  {dr.label}
+                </span>
+                <span className="text-[10px] text-secondary leading-tight">{dr.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-[11px] text-secondary">
+          Smart Hyperlocal Commerce & Logistics for Tier-2/Tier-3 Towns
+        </p>
       </div>
     </div>
   );
