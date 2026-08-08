@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { getProductImage } from '../lib/supabase';
 
 export default function MerchantDashboard() {
   const {
@@ -352,7 +353,7 @@ export default function MerchantDashboard() {
             {merchantProducts.map(prod => (
               <div key={prod.id} className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs p-md space-y-xs flex flex-col justify-between">
                 <div className="space-y-xs">
-                  <img src={prod.image_url || merchant?.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'} alt={prod.name} className="h-36 w-full object-cover rounded-xl" />
+                  <img src={getProductImage(prod, merchant)} alt={prod.name} className="h-36 w-full object-cover rounded-xl" />
                   <h4 className="font-bold text-sm text-on-surface line-clamp-1">{prod.name}</h4>
                   <p className="text-xs text-secondary">{prod.unit || '1 unit'} • Stock: {prod.stock || 50}</p>
                 </div>

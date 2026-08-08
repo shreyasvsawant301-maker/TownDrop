@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { getProductImage } from '../lib/supabase';
 
 export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
   const {
@@ -132,7 +133,7 @@ export default function CustomerShopCart({ onOrderPlaced, onBackToShops }) {
                     <div>
                       <div className="relative h-40 w-full bg-surface-container overflow-hidden">
                         <img
-                          src={product.image_url || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'}
+                          src={getProductImage(product, merchant)}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />

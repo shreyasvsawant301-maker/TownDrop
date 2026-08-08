@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import AiShoppingAssistant from './AiShoppingAssistant';
+import { getProductImage } from '../lib/supabase';
 
 export default function CustomerBrowseShops({ onOpenShop }) {
   const { merchants, products, setSelectedMerchantId, profile, addToCart } = useApp();
@@ -127,7 +128,7 @@ export default function CustomerBrowseShops({ onOpenShop }) {
                       className="w-full flex items-center gap-sm p-sm hover:bg-surface-container-high transition-colors text-left border-b border-outline-variant/40 last:border-0"
                     >
                       <img
-                        src={product.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=100&q=80'}
+                        src={getProductImage(product, product.merchant)}
                         alt={product.name}
                         className="w-10 h-10 rounded-lg object-cover shrink-0"
                       />
